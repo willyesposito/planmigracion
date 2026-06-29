@@ -1,0 +1,42 @@
+{
+  "_doc": "Configuracion global del simulador. Estas son las PERILLAS que se mueven para hacer 'que pasa si'.",
+  "unidades": {
+    "horas_por_dia": 8,
+    "dias_por_semana": 5,
+    "_nota": "1 semana plena = 5 dias = 40 hs. Confirmar jornada real si difiere."
+  },
+  "fechas_clave": {
+    "transicion_susana_toyota": null,
+    "retro_ready_axton": null,
+    "_nota": "transicion_susana_toyota: PERILLA principal, sin definir. La mueve el simulador (Regla 1). retro_ready_axton: fecha en que el retro de Axton queda listo; habilita config de cuentas retro-dependientes (Regla 5, roadmap)."
+  },
+  "pisos_soporte_horas_semana": {
+    "moni": null,
+    "leo": null,
+    "_nota": "Horas semanales reservadas para soporte que la migracion NO puede consumir. Definir con datos de SLA. Regla de piso = roadmap (no MVP)."
+  },
+  "feriados_nacionales_2026": [
+    { "fecha": "2026-01-01", "nombre": "Año Nuevo" },
+    { "fecha": "2026-02-16", "nombre": "Carnaval" },
+    { "fecha": "2026-02-17", "nombre": "Carnaval" },
+    { "fecha": "2026-03-24", "nombre": "Dia de la Memoria" },
+    { "fecha": "2026-04-02", "nombre": "Dia del Veterano y de los Caidos en Malvinas" },
+    { "fecha": "2026-04-03", "nombre": "Viernes Santo" },
+    { "fecha": "2026-05-01", "nombre": "Dia del Trabajador" },
+    { "fecha": "2026-05-25", "nombre": "Dia de la Revolucion de Mayo" },
+    { "fecha": "2026-06-15", "nombre": "Paso a la Inmortalidad del Gral. Guemes" },
+    { "fecha": "2026-06-20", "nombre": "Dia de la Bandera (Belgrano)" },
+    { "fecha": "2026-07-09", "nombre": "Dia de la Independencia" },
+    { "fecha": "2026-08-17", "nombre": "Paso a la Inmortalidad del Gral. San Martin" },
+    { "fecha": "2026-10-12", "nombre": "Dia del Respeto a la Diversidad Cultural" },
+    { "fecha": "2026-11-20", "nombre": "Dia de la Soberania Nacional" },
+    { "fecha": "2026-12-08", "nombre": "Inmaculada Concepcion de Maria" },
+    { "fecha": "2026-12-25", "nombre": "Navidad" }
+  ],
+  "_feriados_nota": "Feriados nacionales 2026. En el MVP los feriados pueden ignorarse; en v2 reducen la capacidad de la semana que los contiene.",
+  "horizonte": {
+    "desde": "2026-01-01",
+    "hasta": "2027-05-31",
+    "_nota": "Cubre todo el board: desde TIM (ene 2026) hasta Ford-Pruebas (may 2027)."
+  }
+}

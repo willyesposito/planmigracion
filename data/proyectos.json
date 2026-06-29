@@ -1,0 +1,28 @@
+{
+  "_doc": "Cuentas a migrar. complejidad (1-10) sale del board de complejidad 6552205482 = PENDIENTE confirmar, por eso null. depende_retro = null donde no esta confirmado por cuenta (los docs dicen ~50% de clientes dependen del retro pero no enumeran cuales). NO inventar estos valores: el usuario los completa.",
+  "_fuentes": {
+    "complejidad": "board monday 6552205482 (matriz complejidad/cliente) - PENDIENTE",
+    "depende_retro": "relevamiento por cuenta, bloque B del checklist - PENDIENTE",
+    "entidades_quickwin_especial": "board 'Plan Migracion Final' + memoria del proyecto (datos reales conocidos)"
+  },
+  "proyectos": [
+    { "id": "tim",       "nombre": "TIM",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Primera cuenta en el board (ene 2026). Relevamiento Leo." },
+    { "id": "allegro",   "nombre": "Allegro",        "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Inicia feb 2026. Relevamiento Lau." },
+    { "id": "piano",     "nombre": "Piano",          "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Leo, configuracion Moni." },
+    { "id": "marval",    "nombre": "Marval",         "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Config larga (30 dias). Relevamiento Susi (unico caso de Susi en relevamiento estandar)." },
+    { "id": "finadiet",  "nombre": "Finadiet",       "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Configuracion Susi." },
+    { "id": "dla",       "nombre": "DLA",            "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Etiquetada 'DLA (Mixplay)' en el board." },
+    { "id": "pof",       "nombre": "POF",            "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Etiquetada 'Plast. Omnium' en el board. Verificar si es POF/Plastic Florida." },
+    { "id": "tasa",      "nombre": "TASA",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": true,  "_nota": "Proyecto ESPECIAL: Toyota/TPA, ~8.000 empleados. Excluido de la regla 1 (acantilado Susana). Configuracion 131 dias." },
+    { "id": "carrier",   "nombre": "Carrier",        "complejidad": null, "depende_retro": null, "entidades": 2, "quick_win": false, "especial": false, "_nota": "2 entidades: multiplica el esfuerzo de relevamiento y config." },
+    { "id": "lowsedo",   "nombre": "Lowsedo",        "complejidad": null, "depende_retro": null, "entidades": 3, "quick_win": false, "especial": false, "_nota": "3 entidades." },
+    { "id": "copetro",   "nombre": "Copetro",        "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento hacia julio. Continua en 2027." },
+    { "id": "sportline", "nombre": "Sportline",      "complejidad": null, "depende_retro": null, "entidades": 4, "quick_win": false, "especial": false, "_nota": "4 entidades. La mas compleja, diferida al final. Config larga (31 dias)." },
+    { "id": "bonafide",  "nombre": "Bonafide",       "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": true,  "especial": false, "_nota": "Quick-win prioritario. Relevamiento Lau, config Susi (2027)." },
+    { "id": "campari",   "nombre": "Campari",        "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Lau (oct 2026), config Moni (feb 2027)." },
+    { "id": "coty",      "nombre": "Coty",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Lau (oct-nov 2026), config Moni (ene 2027)." },
+    { "id": "gsma",      "nombre": "GSMA",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": true,  "especial": false, "_nota": "Quick-win prioritario. Relevamiento Lau (nov-dic 2026), config Susi (feb 2027)." },
+    { "id": "aysa",      "nombre": "Aysa",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Lau (dic 2026), config Moni (mar 2027)." },
+    { "id": "ford",      "nombre": "Ford",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Lau (dic 2026-ene 2027), config Susi (mar 2027)." }
+  ]
+}
