@@ -52,6 +52,11 @@ export function checkRule2(
       )
       if (activas.length === 0) continue
 
+      // Solo hay conflicto si las tareas solapadas son de distintos proyectos.
+      // Solapamiento de fases del mismo cliente es planificación esperada, no colapso.
+      const proyectosDistintos = new Set(activas.map(a => a.proyecto_id)).size
+      if (proyectosDistintos <= 1) continue
+
       const carga = activas.reduce((sum, a) => sum + a.dedicacion_pct, 0)
       // 100% es la carga planificada normal (una fase a tiempo completo) → verde.
       // Rojo solo si SUPERA la capacidad (típicamente dos fases solapadas).
