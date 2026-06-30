@@ -8,8 +8,8 @@ const PRESETS: { label: string; fecha: string }[] = [
 ]
 
 export function ConfigPanel() {
-  const { config, updateConfigFecha, violaciones, resetToSeed, exportarJSON, importarJSON } = useSimuladorStore()
-  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen } = useUIStore()
+  const { config, updateConfigFecha, violaciones, resetToSeed, exportarJSON, importarJSON, clearAsignaciones, asignaciones } = useSimuladorStore()
+  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen, timelineFull, toggleTimelineFull } = useUIStore()
 
   const transicion = config.fechas_clave.transicion_susana_toyota
   const rojos = violaciones.filter(v => v.severidad === 'rojo').length
@@ -58,6 +58,9 @@ export function ConfigPanel() {
       <div style={{ display: 'flex', gap: 6 }}>
         <button onClick={toggleCarga} style={{ ...pillBtn, ...(mostrarCarga ? activePill : {}) }} title="Pintar carga semanal en las celdas">Carga semanal</button>
         <button onClick={toggleDep} style={{ ...pillBtn, ...(mostrarDep ? activePill : {}) }} title="Mostrar flechas de dependencia de la cuenta seleccionada">Dependencias</button>
+        <button onClick={toggleTimelineFull} style={{ ...pillBtn, ...(timelineFull ? activePill : {}) }} title={timelineFull ? 'Volver a mostrar los paneles laterales' : 'Expandir timeline al 100% (oculta cuentas y detalle)'}>
+          {timelineFull ? '⛶ Restaurar paneles' : '⛶ Expandir timeline'}
+        </button>
       </div>
 
       {/* Conteos */}
@@ -72,6 +75,11 @@ export function ConfigPanel() {
         <button onClick={() => setResumen(true)} style={{ ...actionBtn, background: 'var(--celeste)', color: '#fff', border: 'none' }} title="Resumen ejecutivo imprimible">📄 Resumen</button>
         <button onClick={handleExport} style={actionBtn} title="Exportar plan como JSON">↓ Exportar</button>
         <button onClick={handleImport} style={actionBtn} title="Importar plan desde JSON">↑ Importar</button>
+        <button
+          onClick={() => { if (asignaciones.length && confirm(`¿Eliminar las ${asignaciones.length} asignaciones? Las cuentas y el equipo se mantienen, pero quedan sin planificar.`)) clearAsignaciones() }}
+          disabled={!asignaciones.length}
+          style={{ ...actionBtn, color: 'var(--error-tx)', borderColor: 'var(--error-bd)', opacity: asignaciones.length ? 1 : 0.45, cursor: asignaciones.length ? 'pointer' : 'default' }}
+          title="Eliminar todas las asignaciones del plan">🗑 Vaciar asignaciones</button>
         <button onClick={() => { if (confirm('¿Resetear al plan original del board?')) resetToSeed() }} style={{ ...actionBtn, color: 'var(--error-tx)', borderColor: 'var(--error-bd)' }} title="Volver al seed original">↺ Reset</button>
       </div>
     </div>

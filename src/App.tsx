@@ -16,7 +16,7 @@ const TABS: { v: Vista; label: string }[] = [
 ]
 
 export default function App() {
-  const { vista, setVista, modal, resumenAbierto } = useUIStore()
+  const { vista, setVista, modal, resumenAbierto, timelineFull } = useUIStore()
   const [darkMode, setDarkMode] = useState(() => document.documentElement.getAttribute('data-theme') === 'dark')
 
   function toggleTheme() {
@@ -77,9 +77,9 @@ export default function App() {
       <div style={{ flex: 1, overflow: 'hidden', background: 'var(--lienzo)' }}>
         {vista === 'timeline' ? (
           <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-            <AccountRail />
+            {!timelineFull && <AccountRail />}
             <div style={{ flex: 1, overflow: 'hidden' }}><Timeline /></div>
-            <DetailPanel />
+            {!timelineFull && <DetailPanel />}
           </div>
         ) : (
           <Insights />

@@ -74,8 +74,12 @@ interface SimuladorState {
   seleccionarCliente: (proyectoId: string | null) => void
   shiftAccount: (proyectoId: string, semanas: number) => void
   addPersona: (alias: string, rol: RolPersona | null) => void
-  removePersona: (id: string) => { ok: boolean; motivo?: string }
+  removePersona: (id: string, force?: boolean) => { ok: boolean; motivo?: string }
+  renamePersona: (id: string, alias: string) => void
   addProyecto: (nombre: string, inicio: string) => string
+  removeProyecto: (id: string) => void
+  renameProyecto: (id: string, nombre: string) => void
+  clearAsignaciones: () => void
   resetToSeed: () => void
   exportarJSON: () => string
   importarJSON: (json: string) => void
@@ -182,18 +186,30 @@ export const useSimuladorStore = create<SimuladorState>()(
         })
       },
 
-      // No permite borrar a alguien con fases asignadas.
-      removePersona(id) {
+      // Sin force: no permite borrar a alguien con fases asignadas (pide reasignar primero).
+      // Con force: elimina también todas sus fases (acción destructiva, confirmada en la UI).
+      removePersona(id, force = false) {
         const enUso = get().asignaciones.some(a => a.persona_id === id)
-        if (enUso) return { ok: false, motivo: 'Tiene fases asignadas; reasignalas o quitalas primero.' }
+        if (enUso && !force) return { ok: false, motivo: 'Tiene fases asignadas; reasignalas o eliminá la persona con sus fases.' }
         set(state => {
           const personas = state.personas.filter(p => p.id !== id)
+          const asignaciones = force ? state.asignaciones.filter(a => a.persona_id !== id) : state.asignaciones
           return {
             personas,
-            violaciones: recompute(state.asignaciones, state.proyectos, personas, state.config),
+            asignaciones,
+            violaciones: recompute(asignaciones, state.proyectos, personas, state.config),
           }
         })
         return { ok: true }
+      },
+
+      // Renombra el alias visible. El id se mantiene estable (no rompe asignaciones ni reglas).
+      renamePersona(id, alias) {
+        const aliasLimpio = alias.trim()
+        if (!aliasLimpio) return
+        set(state => ({
+          personas: state.personas.map(p => (p.id === id ? { ...p, alias: aliasLimpio } : p)),
+        }))
       },
 
       // Crea una cuenta + 3 fases encadenadas (Relev→Config→Pruebas) autoasignadas por rol/skill.
@@ -255,6 +271,37 @@ export const useSimuladorStore = create<SimuladorState>()(
           }
         })
         return nuevoId
+      },
+
+      // Elimina una cuenta y TODAS sus fases. Si era la seleccionada, limpia la selección.
+      removeProyecto(id) {
+        set(state => {
+          const proyectos = state.proyectos.filter(p => p.id !== id)
+          const asignaciones = state.asignaciones.filter(a => a.proyecto_id !== id)
+          return {
+            proyectos,
+            asignaciones,
+            clienteSeleccionado: state.clienteSeleccionado === id ? null : state.clienteSeleccionado,
+            violaciones: recompute(asignaciones, proyectos, state.personas, state.config),
+          }
+        })
+      },
+
+      // Renombra el nombre comercial de la cuenta. El id se mantiene estable.
+      renameProyecto(id, nombre) {
+        const nombreLimpio = nombre.trim()
+        if (!nombreLimpio) return
+        set(state => ({
+          proyectos: state.proyectos.map(p => (p.id === id ? { ...p, nombre: nombreLimpio } : p)),
+        }))
+      },
+
+      // Vacía todas las asignaciones (las cuentas y el equipo quedan; pasan a "sin planificar").
+      clearAsignaciones() {
+        set(state => ({
+          asignaciones: [],
+          violaciones: recompute([], state.proyectos, state.personas, state.config),
+        }))
       },
 
       resetToSeed() {

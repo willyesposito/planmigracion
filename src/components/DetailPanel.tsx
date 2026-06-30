@@ -1,14 +1,35 @@
-import { useMemo, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useSimuladorStore } from '../store'
 import type { Asignacion, Persona, TipoFase, Violacion } from '../types'
 import { TIPO_COLOR, TIPO_LABEL, ORDEN_FASES } from '../theme/fases'
 import { formatFechaCorta } from '../utils/dates'
 
 export function DetailPanel() {
-  const { proyectos, asignaciones, personas, violaciones, clienteSeleccionado, updateAsignacion, shiftAccount } =
+  const { proyectos, asignaciones, personas, violaciones, clienteSeleccionado, updateAsignacion, shiftAccount, renameProyecto, removeProyecto } =
     useSimuladorStore()
 
   const proyecto = proyectos.find(p => p.id === clienteSeleccionado) ?? null
+
+  // edición del nombre de la cuenta
+  const [editando, setEditando] = useState(false)
+  const [nombreDraft, setNombreDraft] = useState('')
+  useEffect(() => { setEditando(false) }, [clienteSeleccionado])
+
+  function empezarRename() {
+    if (!proyecto) return
+    setNombreDraft(proyecto.nombre)
+    setEditando(true)
+  }
+  function confirmarRename() {
+    if (proyecto) renameProyecto(proyecto.id, nombreDraft)
+    setEditando(false)
+  }
+  function handleRemove() {
+    if (!proyecto) return
+    const fases = asignaciones.filter(a => a.proyecto_id === proyecto.id).length
+    const detalle = fases ? ` y sus ${fases} fase${fases !== 1 ? 's' : ''}` : ''
+    if (confirm(`¿Eliminar la cuenta "${proyecto.nombre}"${detalle}? Esta acción no se puede deshacer.`)) removeProyecto(proyecto.id)
+  }
 
   const violsPorAsig = useMemo(() => {
     const m = new Map<string, Violacion[]>()
@@ -34,7 +55,25 @@ export function DetailPanel() {
       ) : (
         <>
           <div style={{ marginBottom: 16 }}>
-            <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: 'var(--ink)' }}>{proyecto.nombre}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {editando ? (
+                <input
+                  value={nombreDraft}
+                  onChange={e => setNombreDraft(e.target.value)}
+                  onBlur={confirmarRename}
+                  onKeyDown={e => { if (e.key === 'Enter') confirmarRename(); if (e.key === 'Escape') setEditando(false) }}
+                  autoFocus
+                  maxLength={40}
+                  style={{ flex: 1, fontSize: 18, fontWeight: 700, color: 'var(--ink)', padding: '4px 8px', border: '1.5px solid var(--celeste)', borderRadius: 8, background: 'var(--white)' }}
+                />
+              ) : (
+                <>
+                  <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: 'var(--ink)', flex: 1 }}>{proyecto.nombre}</h2>
+                  <button onClick={empezarRename} title="Renombrar cuenta" style={iconBtn}>✏️</button>
+                  <button onClick={handleRemove} title="Eliminar cuenta" style={{ ...iconBtn, color: 'var(--error-tx)' }}>🗑</button>
+                </>
+              )}
+            </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
               {proyecto.especial && <span style={pill('var(--tasa)')}>Especial · Toyota</span>}
               {proyecto.quick_win && <span style={pill('var(--ok)')}>Quick-win</span>}
@@ -153,6 +192,10 @@ const input: CSSProperties = {
 const stepBtn: CSSProperties = {
   width: 26, height: 26, border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',
   cursor: 'pointer', fontSize: 16, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'var(--t1)', flexShrink: 0,
+}
+const iconBtn: CSSProperties = {
+  border: '1.5px solid var(--line)', borderRadius: 8, background: 'var(--white)', cursor: 'pointer',
+  fontSize: 13, lineHeight: 1, padding: '5px 8px', flexShrink: 0,
 }
 const moverBtn: CSSProperties = {
   padding: '5px 10px', border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',

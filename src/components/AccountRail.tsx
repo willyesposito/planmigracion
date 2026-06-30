@@ -4,8 +4,14 @@ import { useUIStore } from '../uiStore'
 import { formatFechaCorta } from '../utils/dates'
 
 export function AccountRail() {
-  const { proyectos, asignaciones, violaciones, clienteSeleccionado, seleccionarCliente } = useSimuladorStore()
+  const { proyectos, asignaciones, violaciones, clienteSeleccionado, seleccionarCliente, removeProyecto } = useSimuladorStore()
   const abrirModal = useUIStore(s => s.abrirModal)
+
+  function handleRemove(id: string, nombre: string) {
+    const fases = asignaciones.filter(a => a.proyecto_id === id).length
+    const detalle = fases ? ` y sus ${fases} fase${fases !== 1 ? 's' : ''}` : ''
+    if (confirm(`¿Eliminar la cuenta "${nombre}"${detalle}? Esta acción no se puede deshacer.`)) removeProyecto(id)
+  }
 
   // violaciones por asignación → color por cuenta
   const colorPorProyecto = useMemo(() => {
@@ -54,32 +60,43 @@ export function AccountRail() {
           const color = colorPorProyecto.get(proyecto.id) ?? 'verde'
           const activo = proyecto.id === clienteSeleccionado
           return (
-            <button
+            <div
               key={proyecto.id}
-              onClick={() => seleccionarCliente(proyecto.id)}
+              className="cuenta-fila"
               style={{
                 display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '9px 12px',
-                border: 'none', background: activo ? 'var(--celeste-dim)' : 'transparent', cursor: 'pointer',
-                textAlign: 'left', borderLeft: activo ? '3px solid var(--celeste)' : '3px solid transparent',
+                background: activo ? 'var(--celeste-dim)' : 'transparent',
+                borderLeft: activo ? '3px solid var(--celeste)' : '3px solid transparent',
                 transition: 'background 0.12s',
               }}
             >
-              <span style={{ width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
-                background: color === 'verde' ? 'var(--ok)' : color === 'ambar' ? 'var(--warn)' : 'var(--error)' }} />
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: 'block', fontSize: 13.5, fontWeight: activo ? 700 : 500, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {proyecto.nombre}
+              <button
+                onClick={() => seleccionarCliente(proyecto.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: 9, flex: 1, minWidth: 0, border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0 }}
+              >
+                <span style={{ width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
+                  background: color === 'verde' ? 'var(--ok)' : color === 'ambar' ? 'var(--warn)' : 'var(--error)' }} />
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontSize: 13.5, fontWeight: activo ? 700 : 500, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {proyecto.nombre}
+                  </span>
+                  <span style={{ fontSize: 10.5, color: 'var(--t3)' }}>
+                    {primeraFase ? `desde ${formatFechaCorta(primeraFase)}` : 'sin planificar'}
+                  </span>
                 </span>
-                <span style={{ fontSize: 10.5, color: 'var(--t3)' }}>
-                  {primeraFase ? `desde ${formatFechaCorta(primeraFase)}` : 'sin planificar'}
+                <span style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+                  {proyecto.especial && <span style={badge('var(--tasa)')}>TASA</span>}
+                  {proyecto.quick_win && <span style={badge('var(--ok)')}>QW</span>}
+                  {proyecto.entidades > 1 && <span style={badge('var(--celeste)')}>×{proyecto.entidades}</span>}
                 </span>
-              </span>
-              <span style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                {proyecto.especial && <span style={badge('var(--tasa)')}>TASA</span>}
-                {proyecto.quick_win && <span style={badge('var(--ok)')}>QW</span>}
-                {proyecto.entidades > 1 && <span style={badge('var(--celeste)')}>×{proyecto.entidades}</span>}
-              </span>
-            </button>
+              </button>
+              <button
+                onClick={() => handleRemove(proyecto.id, proyecto.nombre)}
+                className="cuenta-borrar"
+                title="Eliminar cuenta"
+                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--t3)', fontSize: 17, lineHeight: 1, flexShrink: 0, padding: '0 2px' }}
+              >×</button>
+            </div>
           )
         })}
       </div>
