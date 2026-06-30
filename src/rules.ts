@@ -93,6 +93,8 @@ export function checkRule3(asignaciones: Asignacion[]): Violacion[] {
     for (const predId of a.predecesoras) {
       const pred = byId.get(predId)
       if (!pred) continue
+      // Distintas personas pueden solaparse; el conflicto solo aplica a la misma persona.
+      if (a.persona_id !== pred.persona_id) continue
       if (a.inicio < pred.fin) {
         violations.push({
           tipo: 'R3',
