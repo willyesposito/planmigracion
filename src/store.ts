@@ -89,11 +89,10 @@ interface SimuladorState {
 
 function recompute(
   asignaciones: Asignacion[],
-  proyectos: Proyecto[],
   personas: Persona[],
   config: Config,
 ): Violacion[] {
-  return _computeViolaciones(asignaciones, proyectos, personas, config)
+  return _computeViolaciones(asignaciones, personas, config)
 }
 
 export const useSimuladorStore = create<SimuladorState>()(
@@ -103,7 +102,7 @@ export const useSimuladorStore = create<SimuladorState>()(
       proyectos: seedProyectos,
       asignaciones: seedAsignaciones,
       config: seedConfig,
-      violaciones: recompute(seedAsignaciones, seedProyectos, seedPersonas, seedConfig),
+      violaciones: recompute(seedAsignaciones, seedPersonas, seedConfig),
       clienteSeleccionado: null,
 
       updateAsignacion(id, patch) {
@@ -118,7 +117,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           })
           return {
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
       },
@@ -167,7 +166,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           const asignaciones = [...state.asignaciones, nueva]
           return {
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
       },
@@ -230,7 +229,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           return {
             config,
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, state.personas, config),
+            violaciones: recompute(asignaciones, state.personas, config),
           }
         })
       },
@@ -263,7 +262,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           })
           return {
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
       },
@@ -298,7 +297,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           return {
             personas,
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, personas, state.config),
+            violaciones: recompute(asignaciones, personas, state.config),
           }
         })
         return { ok: true }
@@ -368,7 +367,7 @@ export const useSimuladorStore = create<SimuladorState>()(
             proyectos,
             asignaciones,
             clienteSeleccionado: pid,
-            violaciones: recompute(asignaciones, proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
         return nuevoId
@@ -383,7 +382,7 @@ export const useSimuladorStore = create<SimuladorState>()(
             proyectos,
             asignaciones,
             clienteSeleccionado: state.clienteSeleccionado === id ? null : state.clienteSeleccionado,
-            violaciones: recompute(asignaciones, proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
       },
@@ -414,7 +413,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           })
           return {
             asignaciones,
-            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+            violaciones: recompute(asignaciones, state.personas, state.config),
           }
         })
       },
@@ -423,7 +422,7 @@ export const useSimuladorStore = create<SimuladorState>()(
       clearAsignaciones() {
         set(state => ({
           asignaciones: [],
-          violaciones: recompute([], state.proyectos, state.personas, state.config),
+          violaciones: recompute([], state.personas, state.config),
         }))
       },
 
@@ -433,7 +432,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           proyectos: seedProyectos,
           asignaciones: seedAsignaciones,
           config: seedConfig,
-          violaciones: recompute(seedAsignaciones, seedProyectos, seedPersonas, seedConfig),
+          violaciones: recompute(seedAsignaciones, seedPersonas, seedConfig),
           clienteSeleccionado: null,
         })
       },
@@ -454,7 +453,7 @@ export const useSimuladorStore = create<SimuladorState>()(
           proyectos,
           asignaciones,
           config,
-          violaciones: recompute(asignaciones, proyectos, personas, config),
+          violaciones: recompute(asignaciones, personas, config),
           clienteSeleccionado: null,
         })
       },
@@ -469,7 +468,7 @@ export const useSimuladorStore = create<SimuladorState>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          state.violaciones = recompute(state.asignaciones, state.proyectos, state.personas, state.config)
+          state.violaciones = recompute(state.asignaciones, state.personas, state.config)
         }
       },
     },
