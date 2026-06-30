@@ -125,7 +125,7 @@ export function Timeline() {
     personas, proyectos, asignaciones, config, violaciones,
     clienteSeleccionado, updateAsignacion, shiftAccountDias, seleccionarCliente,
   } = useSimuladorStore()
-  const { mostrarCarga, mostrarDep, zoom, irHoyToken } = useUIStore()
+  const { mostrarCarga, mostrarDep, zoom, irHoyToken, modoMovimiento } = useUIStore()
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const rowsRef   = useRef<HTMLDivElement>(null)
@@ -247,7 +247,10 @@ export function Timeline() {
   function onBarDown(e: React.MouseEvent, a: Asignacion, mode: DragMode) {
     if (a.es_bloqueo) return
     e.preventDefault(); e.stopPropagation()
-    const accountMode = mode !== 'resize' && e.shiftKey && !!a.proyecto_id
+    // Modo estricto = mover el proyecto entero; Shift invierte el modo puntualmente.
+    const estricto = modoMovimiento === 'estricto'
+    const mueveProyecto = estricto ? !e.shiftKey : e.shiftKey
+    const accountMode = mode !== 'resize' && mueveProyecto && !!a.proyecto_id
     let minDay: number | undefined
     if (accountMode && a.proyecto_id) {
       const days = asignaciones
@@ -514,7 +517,9 @@ export function Timeline() {
             return (
               <div key={a.id}
                 onMouseDown={e => onBarDown(e, a, 'phase')}
-                title={`${label}\n${a.inicio} → ${a.fin} · ${a.duracion_dias} días hábiles${a.es_bloqueo ? '' : '\nArrastrá para mover · Shift = cuenta entera · borde derecho = estirar'}`}
+                title={`${label}\n${a.inicio} → ${a.fin} · ${a.duracion_dias} días hábiles${a.es_bloqueo ? '' : (modoMovimiento === 'estricto'
+                  ? '\nModo estricto: arrastrar mueve las 3 fases del proyecto · Shift = solo esta tarea · borde derecho = estirar'
+                  : '\nModo flexible: arrastrar mueve solo esta tarea · Shift = proyecto entero · borde derecho = estirar')}`}
                 style={{
                   position: 'absolute', left, top, width, height: BAR_H,
                   background: fill, borderRadius: 6, display: 'flex', alignItems: 'center', paddingLeft: 7, paddingRight: 6,

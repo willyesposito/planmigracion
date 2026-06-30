@@ -4,6 +4,8 @@ export type Vista = 'timeline' | 'insights'
 export type Modal = null | 'equipo' | 'cuenta'
 export type ZoomLevel = 'dias' | 'semanas' | 'meses' | 'trimestres'
 export type SortCuentas = 'fecha' | 'nombre'
+/** flexible = arrastrar mueve solo la tarea · estricto = mueve las 3 fases del proyecto juntas */
+export type ModoMovimiento = 'flexible' | 'estricto'
 
 interface UIState {
   vista: Vista
@@ -15,6 +17,7 @@ interface UIState {
   zoom: ZoomLevel
   sortCuentas: SortCuentas
   irHoyToken: number
+  modoMovimiento: ModoMovimiento
 
   setVista: (v: Vista) => void
   toggleCarga: () => void
@@ -23,6 +26,7 @@ interface UIState {
   setZoom: (z: ZoomLevel) => void
   toggleSortCuentas: () => void
   irHoy: () => void
+  setModoMovimiento: (m: ModoMovimiento) => void
   abrirModal: (m: Exclude<Modal, null>) => void
   cerrarModal: () => void
   setResumen: (abierto: boolean) => void
@@ -38,6 +42,7 @@ export const useUIStore = create<UIState>((set) => ({
   zoom: 'semanas',
   sortCuentas: 'fecha',
   irHoyToken: 0,
+  modoMovimiento: 'flexible',
 
   setVista: (vista) => set({ vista }),
   toggleCarga: () => set(s => ({ mostrarCarga: !s.mostrarCarga })),
@@ -46,6 +51,7 @@ export const useUIStore = create<UIState>((set) => ({
   setZoom: (zoom) => set({ zoom }),
   toggleSortCuentas: () => set(s => ({ sortCuentas: s.sortCuentas === 'fecha' ? 'nombre' : 'fecha' })),
   irHoy: () => set(s => ({ irHoyToken: s.irHoyToken + 1 })),
+  setModoMovimiento: (modoMovimiento) => set({ modoMovimiento }),
   abrirModal: (modal) => set({ modal }),
   cerrarModal: () => set({ modal: null }),
   setResumen: (resumenAbierto) => set({ resumenAbierto }),
