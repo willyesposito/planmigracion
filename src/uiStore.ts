@@ -14,6 +14,7 @@ interface UIState {
   timelineFull: boolean
   zoom: ZoomLevel
   sortCuentas: SortCuentas
+  irHoyToken: number
 
   setVista: (v: Vista) => void
   toggleCarga: () => void
@@ -21,6 +22,7 @@ interface UIState {
   toggleTimelineFull: () => void
   setZoom: (z: ZoomLevel) => void
   toggleSortCuentas: () => void
+  irHoy: () => void
   abrirModal: (m: Exclude<Modal, null>) => void
   cerrarModal: () => void
   setResumen: (abierto: boolean) => void
@@ -35,6 +37,7 @@ export const useUIStore = create<UIState>((set) => ({
   timelineFull: false,
   zoom: 'semanas',
   sortCuentas: 'fecha',
+  irHoyToken: 0,
 
   setVista: (vista) => set({ vista }),
   toggleCarga: () => set(s => ({ mostrarCarga: !s.mostrarCarga })),
@@ -42,6 +45,7 @@ export const useUIStore = create<UIState>((set) => ({
   toggleTimelineFull: () => set(s => ({ timelineFull: !s.timelineFull })),
   setZoom: (zoom) => set({ zoom }),
   toggleSortCuentas: () => set(s => ({ sortCuentas: s.sortCuentas === 'fecha' ? 'nombre' : 'fecha' })),
+  irHoy: () => set(s => ({ irHoyToken: s.irHoyToken + 1 })),
   abrirModal: (modal) => set({ modal }),
   cerrarModal: () => set({ modal: null }),
   setResumen: (resumenAbierto) => set({ resumenAbierto }),

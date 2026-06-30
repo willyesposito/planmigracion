@@ -125,7 +125,7 @@ export function Timeline() {
     personas, proyectos, asignaciones, config, violaciones,
     clienteSeleccionado, updateAsignacion, shiftAccountDias, seleccionarCliente,
   } = useSimuladorStore()
-  const { mostrarCarga, mostrarDep, zoom } = useUIStore()
+  const { mostrarCarga, mostrarDep, zoom, irHoyToken } = useUIStore()
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const rowsRef   = useRef<HTMLDivElement>(null)
@@ -274,6 +274,16 @@ export function Timeline() {
     scrollRef.current.scrollTo({ left: Math.max(0, x - 120), behavior: 'smooth' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clienteSeleccionado])
+
+  // scroll al día de hoy (botón "📍 Hoy")
+  useEffect(() => {
+    if (irHoyToken === 0 || !scrollRef.current) return
+    const d = differenceInDays(new Date(), horizonStart)
+    const x = NAME_W + d * pxPerDay
+    const visible = scrollRef.current.clientWidth
+    scrollRef.current.scrollTo({ left: Math.max(0, x - Math.max(120, visible / 2)), behavior: 'smooth' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [irHoyToken])
 
   // líneas verticales de referencia
   const transicion = config.fechas_clave.transicion_susana_toyota

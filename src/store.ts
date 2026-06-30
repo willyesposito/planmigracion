@@ -70,6 +70,7 @@ interface SimuladorState {
   clienteSeleccionado: string | null
 
   updateAsignacion: (id: string, patch: Partial<Asignacion>) => void
+  addFase: (proyectoId: string, tipo: TipoFase, personaId: string) => void
   updateConfigFecha: (key: 'transicion_susana_toyota' | 'retro_ready_axton', value: string | null) => void
   seleccionarCliente: (proyectoId: string | null) => void
   shiftAccount: (proyectoId: string, semanas: number) => void
@@ -122,6 +123,55 @@ export const useSimuladorStore = create<SimuladorState>()(
         })
       },
 
+      // Planifica una fase suelta (Relev/Config/Pruebas) de una cuenta eligiendo quién la hace.
+      // Encadena con la fase anterior si ya existe (no rompe R3); si es la primera, arranca
+      // en el lunes de hoy (o el inicio del horizonte, lo que sea más tarde).
+      addFase(proyectoId, tipo, personaId) {
+        set(state => {
+          const existing = state.asignaciones.filter(a => a.proyecto_id === proyectoId && !a.es_bloqueo)
+          if (existing.some(a => a.tipo === tipo)) return {} // ya planificada
+          const dur = DUR_DEFAULT[tipo as keyof typeof DUR_DEFAULT] ?? 10
+
+          const predTipo: Record<string, TipoFase | null> = {
+            Relevamiento: null, Configuracion: 'Relevamiento', Pruebas: 'Configuracion',
+          }
+          const pred = predTipo[tipo] ? existing.find(a => a.tipo === predTipo[tipo]) ?? null : null
+
+          let inicio: string
+          if (pred) {
+            inicio = siguienteLunes(pred.fin)
+          } else {
+            const hoyMonday = getMondayOfWeek(new Date())
+            const horizMonday = getMondayOfWeek(parseISO(state.config.horizonte.desde))
+            inicio = toISO(hoyMonday > horizMonday ? hoyMonday : horizMonday)
+          }
+
+          const sufijo: Record<string, string> = { Relevamiento: 'relev', Configuracion: 'config', Pruebas: 'pruebas' }
+          const idsExist = new Set(state.asignaciones.map(a => a.id))
+          let id = `${proyectoId}-${sufijo[tipo] ?? 'fase'}`
+          let n = 2
+          while (idsExist.has(id)) id = `${proyectoId}-${sufijo[tipo] ?? 'fase'}_${n++}`
+
+          const nueva: Asignacion = {
+            id,
+            proyecto_id: proyectoId,
+            tipo,
+            persona_id: personaId,
+            inicio,
+            fin: calcularFin(inicio, dur),
+            duracion_dias: dur,
+            dedicacion_pct: 1,
+            predecesoras: pred ? [pred.id] : [],
+            es_bloqueo: false,
+          }
+          const asignaciones = [...state.asignaciones, nueva]
+          return {
+            asignaciones,
+            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+          }
+        })
+      },
+
       updateConfigFecha(key, value) {
         set(state => {
           const config: Config = {
@@ -131,11 +181,15 @@ export const useSimuladorStore = create<SimuladorState>()(
 
           let asignaciones = state.asignaciones
 
-          // Al definir "Inicio Toyota" y TASA sin fases: auto-crear Relev(lau 4m) → Config(susi 4m) → Pruebas(lau 2m)
+          // "Inicio Toyota" gobierna las fases de TASA:
+          //  - TASA sin fases  → auto-crear Relev(lau 4m) → Config(susi 4m) → Pruebas(lau 2m)
+          //  - TASA ya planificada → mover el bloque entero para que arranque en la nueva fecha
           if (key === 'transicion_susana_toyota' && value) {
+            const targetInicio = toISO(getMondayOfWeek(parseISO(value)))
             const tasaFases = state.asignaciones.filter(a => a.proyecto_id === 'tasa' && !a.es_bloqueo)
+
             if (tasaFases.length === 0) {
-              const relevInicio = toISO(getMondayOfWeek(parseISO(value)))
+              const relevInicio = targetInicio
               const relevFin    = calcularFin(relevInicio, 88)
               const configInicio = siguienteLunes(relevFin)
               const configFin   = calcularFin(configInicio, 88)
@@ -159,6 +213,17 @@ export const useSimuladorStore = create<SimuladorState>()(
                 mk('pruebas', 'Pruebas',       pruebasInicio, pruebasFin, 44, ['tasa-config']),
               ]
               asignaciones = [...state.asignaciones, ...nuevas]
+            } else {
+              // Desplazar TODAS las fases de TASA para que la más temprana arranque en targetInicio.
+              const earliest = tasaFases.reduce((m, a) => (a.inicio < m ? a.inicio : m), tasaFases[0].inicio)
+              const delta = differenceInDays(parseISO(targetInicio), parseISO(earliest))
+              if (delta !== 0) {
+                asignaciones = state.asignaciones.map(a => {
+                  if (a.proyecto_id !== 'tasa') return a
+                  const inicio = toISO(addDays(parseISO(a.inicio), delta))
+                  return { ...a, inicio, fin: calcularFin(inicio, a.duracion_dias) }
+                })
+              }
             }
           }
 
@@ -395,7 +460,7 @@ export const useSimuladorStore = create<SimuladorState>()(
       },
     }),
     {
-      name: 'simulador-ha-v1',
+      name: 'simulador-ha-v2',
       partialize: state => ({
         personas: state.personas,
         proyectos: state.proyectos,

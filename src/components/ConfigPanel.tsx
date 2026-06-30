@@ -16,7 +16,7 @@ const PRESETS: { label: string; fecha: string }[] = [
 
 export function ConfigPanel() {
   const { config, updateConfigFecha, violaciones, resetToSeed, exportarJSON, importarJSON, clearAsignaciones, asignaciones } = useSimuladorStore()
-  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen, timelineFull, toggleTimelineFull, zoom, setZoom } = useUIStore()
+  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen, timelineFull, toggleTimelineFull, zoom, setZoom, irHoy } = useUIStore()
 
   const transicion = config.fechas_clave.transicion_susana_toyota
   const rojos = violaciones.filter(v => v.severidad === 'rojo').length
@@ -71,6 +71,11 @@ export function ConfigPanel() {
         ))}
       </div>
 
+      {/* Ir al día de hoy */}
+      <button onClick={irHoy} style={{ ...pillBtn, display: 'flex', alignItems: 'center', gap: 5, borderColor: 'var(--celeste-border)', color: 'var(--celeste-dark)' }} title="Centrar el timeline en el día de hoy">
+        📍 Hoy
+      </button>
+
       {/* Toggles de visualización */}
       <div style={{ display: 'flex', gap: 6 }}>
         <button onClick={toggleCarga} style={{ ...pillBtn, ...(mostrarCarga ? activePill : {}) }} title="Pintar carga semanal en las celdas">Carga semanal</button>
@@ -104,12 +109,12 @@ export function ConfigPanel() {
 }
 
 const pillBtn: CSSProperties = {
-  padding: '4px 11px', border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',
+  padding: '4px 11px', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'var(--line)', borderRadius: 9999, background: 'var(--white)',
   cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--t2)',
 }
 const activePill: CSSProperties = { background: 'var(--celeste)', color: '#fff', borderColor: 'var(--celeste)' }
 const actionBtn: CSSProperties = {
-  padding: '5px 14px', border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',
+  padding: '5px 14px', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'var(--line)', borderRadius: 9999, background: 'var(--white)',
   cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--t1)',
 }
 function chip(bg: string, tx: string, bd: string): CSSProperties {
