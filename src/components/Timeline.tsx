@@ -147,11 +147,11 @@ export function Timeline() {
   const proyectoPorId = useMemo(() => new Map(proyectos.map(p => [p.id, p])), [proyectos])
   const filaDe        = useMemo(() => new Map(personas.map((p, i) => [p.id, i])), [personas])
 
-  // barras R1/R3 en rojo
+  // barras R3 en rojo
   const barRojo = useMemo(() => {
     const s = new Set<string>()
     for (const v of violaciones)
-      if (v.severidad === 'rojo' && (v.tipo === 'R1' || v.tipo === 'R3')) s.add(v.asignacion_id)
+      if (v.severidad === 'rojo' && v.tipo === 'R3') s.add(v.asignacion_id)
     return s
   }, [violaciones])
 

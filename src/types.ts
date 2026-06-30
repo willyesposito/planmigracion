@@ -58,7 +58,7 @@ export interface Config {
 }
 
 export type SeveridadViolacion = 'rojo' | 'ambar'
-export type TipoRegla = 'R1' | 'R2' | 'R3'
+export type TipoRegla = 'R2' | 'R3'
 
 export interface Violacion {
   tipo: TipoRegla
