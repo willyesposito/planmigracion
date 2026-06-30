@@ -23,6 +23,7 @@ interface DragState {
   origFin: string
   origDur: number
   origPersona: string
+  minSW?: number   // weekIdx mínimo de la cuenta (clamp uniforme en modo account)
   dw: number       // semanas desplazadas (preview)
   persona: string  // persona destino (preview)
 }
@@ -57,23 +58,24 @@ export function Timeline() {
   }, [violaciones])
 
   // carga por persona|semanaISO → severidad (de R2)
+  // carga por persona|weekIdx (índice numérico de columna, derivado con semanaIndex
+  // del mismo 'base' que el resto → robusto a zona horaria).
   const cargaCelda = useMemo(() => {
     const m = new Map<string, 'rojo' | 'ambar'>()
     for (const v of violaciones) {
       if (v.tipo !== 'R2' || !v.persona_id || !v.semana) continue
-      const key = `${v.persona_id}|${v.semana}`
+      const key = `${v.persona_id}|${semanaIndex(v.semana, base)}`
       if (v.severidad === 'rojo' || m.get(key) !== 'rojo') m.set(key, v.severidad)
     }
     return m
-  }, [violaciones])
+  }, [violaciones, base])
 
   // ¿la persona está sobrecargada en alguna semana que cubre esta barra? → anillo
   function ringDe(a: Asignacion): 'rojo' | 'ambar' | null {
     const sW = weekIdx(a.inicio), eW = weekIdx(a.fin)
     let worst: 'rojo' | 'ambar' | null = null
     for (let w = sW; w <= eW; w++) {
-      const lunesISO = toISO(addDays(base, w * 7))
-      const sev = cargaCelda.get(`${a.persona_id}|${lunesISO}`)
+      const sev = cargaCelda.get(`${a.persona_id}|${w}`)
       if (sev === 'rojo') return 'rojo'
       if (sev === 'ambar') worst = 'ambar'
     }
@@ -143,8 +145,13 @@ export function Timeline() {
   function onBarDown(e: React.MouseEvent, a: Asignacion, mode: DragMode) {
     if (a.es_bloqueo) return
     e.preventDefault()
-    if (mode !== 'resize') e.stopPropagation()
-    const accountMode = mode !== 'resize' && (e.shiftKey) && !!a.proyecto_id
+    e.stopPropagation() // SIEMPRE: el grip (hijo) no debe burbujear al handler de la barra
+    const accountMode = mode !== 'resize' && e.shiftKey && !!a.proyecto_id
+    let minSW: number | undefined
+    if (accountMode && a.proyecto_id) {
+      const ws = asignaciones.filter(x => x.proyecto_id === a.proyecto_id).map(x => weekIdx(x.inicio))
+      minSW = ws.length ? Math.min(...ws) : weekIdx(a.inicio)
+    }
     setDrag({
       id: a.id,
       mode: accountMode ? 'account' : mode,
@@ -154,6 +161,7 @@ export function Timeline() {
       origFin: a.fin,
       origDur: a.duracion_dias,
       origPersona: a.persona_id,
+      minSW,
       dw: 0,
       persona: a.persona_id,
     })
@@ -186,7 +194,8 @@ export function Timeline() {
       } else if (drag.mode === 'resize' && drag.id === a.id) {
         eW = Math.max(sW, weekIdx(toISO(addDays(parseISO(drag.origFin), drag.dw * 7))))
       } else if (drag.mode === 'account' && drag.proyectoId && a.proyecto_id === drag.proyectoId) {
-        const dwc = Math.max(drag.dw, -sW)
+        // clamp UNIFORME por la fase más temprana (igual que store.shiftAccount) → el bloque no se deforma
+        const dwc = Math.max(drag.dw, -(drag.minSW ?? sW))
         sW = sW + dwc; eW = eW + dwc
       }
     }
@@ -255,13 +264,12 @@ export function Timeline() {
 
           {/* tintes de carga (R2) */}
           {mostrarCarga && [...cargaCelda.entries()].map(([key, sev]) => {
-            const [pid, semISO] = key.split('|')
+            const [pid, wStr] = key.split('|')
             const row = filaDe.get(pid)
-            if (row == null) return null
-            const w = semanaIndex(semISO, base)
-            if (w < 0 || w >= nWeeks) return null
+            const w = Number(wStr)
+            if (row == null || w < 0 || w >= nWeeks) return null
             return (
-              <div key={key} style={{ position: 'absolute', top: row * ROW_H, left: NAME_W + w * COL, width: COL, height: ROW_H, background: sev === 'rojo' ? 'rgba(232,85,24,0.15)' : 'rgba(245,158,11,0.16)', zIndex: 1, pointerEvents: 'none' }} />
+              <div key={key} style={{ position: 'absolute', top: row * ROW_H, left: NAME_W + w * COL, width: COL, height: ROW_H, background: sev === 'rojo' ? 'var(--error-tint)' : 'var(--warn-tint)', zIndex: 1, pointerEvents: 'none' }} />
             )
           })}
 

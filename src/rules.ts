@@ -1,6 +1,6 @@
 import { addDays } from 'date-fns'
 import type { Asignacion, Config, Persona, Proyecto, Violacion } from './types'
-import { getSemanas, seSuperponen } from './utils/dates'
+import { getSemanas, seSuperponen, toISO } from './utils/dates'
 
 export function checkRule1(
   asignaciones: Asignacion[],
@@ -42,8 +42,10 @@ export function checkRule2(
   for (const persona of personas) {
     for (const lunes of semanas) {
       const viernes = addDays(lunes, 4)
-      const lunesISO = lunes.toISOString().slice(0, 10)
-      const viernesISO = viernes.toISOString().slice(0, 10)
+      // Claves de semana en hora LOCAL (toISO) para ser consistentes con base/semanaIndex
+      // del timeline; toISOString (UTC) corría un día en husos al este de UTC.
+      const lunesISO = toISO(lunes)
+      const viernesISO = toISO(viernes)
 
       const activas = asignaciones.filter(
         a => a.persona_id === persona.id && seSuperponen(a.inicio, a.fin, lunesISO, viernesISO),

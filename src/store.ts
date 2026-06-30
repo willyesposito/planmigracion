@@ -145,7 +145,9 @@ export const useSimuladorStore = create<SimuladorState>()(
             const earliest = projAsigs.reduce((m, a) => (a.inicio < m ? a.inicio : m), projAsigs[0].inicio)
             const earliestMonday = getMondayOfWeek(parseISO(earliest))
             const desdeMonday = getMondayOfWeek(parseISO(state.config.horizonte.desde))
-            const maxLeftDias = Math.round((desdeMonday.getTime() - earliestMonday.getTime()) / 86400000)
+            // maxLeftDias <= 0 normalmente; Math.min(0, …) evita que una fase ya anterior
+            // al horizonte invierta el signo del desplazamiento.
+            const maxLeftDias = Math.min(0, Math.round((desdeMonday.getTime() - earliestMonday.getTime()) / 86400000))
             dias = Math.max(dias, maxLeftDias) // no pasar de la semana 0
           }
           if (dias === 0) return {}

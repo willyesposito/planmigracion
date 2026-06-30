@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useSimuladorStore } from '../store'
@@ -13,6 +13,8 @@ export function ResumenEjecutivo() {
   const { proyectos, asignaciones, personas, violaciones, config } = useSimuladorStore()
   const setResumen = useUIStore(s => s.setResumen)
   const [copiado, setCopiado] = useState(false)
+  const copiadoTimer = useRef<number>()
+  useEffect(() => () => { if (copiadoTimer.current) clearTimeout(copiadoTimer.current) }, [])
 
   const d = useMemo(() => {
     const rojos = violaciones.filter(v => v.severidad === 'rojo')
@@ -75,7 +77,8 @@ export function ResumenEjecutivo() {
       document.body.removeChild(ta)
     }
     setCopiado(true)
-    setTimeout(() => setCopiado(false), 1800)
+    if (copiadoTimer.current) clearTimeout(copiadoTimer.current)
+    copiadoTimer.current = window.setTimeout(() => setCopiado(false), 1800)
   }
 
   return (
@@ -135,7 +138,7 @@ export function ResumenEjecutivo() {
         <h3 style={hTitle}>Cuentas ({d.cuentas.length})</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
-            <tr style={{ borderBottom: '2px solid #E2E6EC', textAlign: 'left' }}>
+            <tr style={{ borderBottom: '2px solid #E7E6E6', textAlign: 'left' }}>
               <th style={th}>Cuenta</th><th style={th}>Estado</th><th style={th}>Desde</th><th style={th}>Entrega est.</th>
             </tr>
           </thead>
@@ -154,7 +157,7 @@ export function ResumenEjecutivo() {
           </tbody>
         </table>
 
-        <div style={{ marginTop: 24, paddingTop: 14, borderTop: '1px solid #E2E6EC', fontSize: 10.5, color: '#8FA3BA' }}>
+        <div style={{ marginTop: 24, paddingTop: 14, borderTop: '1px solid #E7E6E6', fontSize: 10.5, color: '#8FA3BA' }}>
           Generado por el Simulador de Migración · Planificación previa (la fuente de ejecución sigue siendo Monday) · {hoy}
         </div>
       </div>
@@ -164,7 +167,7 @@ export function ResumenEjecutivo() {
 
 function RKpi({ label, valor, color }: { label: string; valor: string | number; color: string }) {
   return (
-    <div style={{ border: '1px solid #E2E6EC', borderRadius: 8, padding: '10px 12px' }}>
+    <div style={{ border: '1px solid #E7E6E6', borderRadius: 8, padding: '10px 12px' }}>
       <div style={{ fontSize: 10, fontWeight: 600, color: '#4A6080', textTransform: 'uppercase', letterSpacing: 0.4 }}>{label}</div>
       <div style={{ fontSize: 22, fontWeight: 800, color, marginTop: 2 }}>{valor}</div>
     </div>

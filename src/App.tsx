@@ -36,7 +36,7 @@ export default function App() {
             <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
               Hidalgo <span style={{ color: 'var(--gris)', fontWeight: 400, fontStyle: 'italic' }}>&amp;</span> Asociados
             </span>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--celeste)' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--celeste-deeper)' }}>
               Simulador de Migración
             </span>
           </div>
