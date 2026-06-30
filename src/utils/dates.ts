@@ -46,6 +46,18 @@ export function calcularFin(inicio: string, duracionDias: number): string {
   return toISO(d)
 }
 
+/** Cuenta días hábiles (lun-vie) inclusive entre dos fechas ISO. Mínimo 1. Inverso de calcularFin. */
+export function diasHabiles(inicioISO: string, finISO: string): number {
+  let d = parseISO(inicioISO)
+  const end = parseISO(finISO)
+  let count = 0
+  while (d <= end) {
+    if (!isWeekend(d)) count++
+    d = addDays(d, 1)
+  }
+  return Math.max(1, count)
+}
+
 /** Genera todos los lunes entre dos fechas ISO. */
 export function getSemanas(desde: string, hasta: string): Date[] {
   const result: Date[] = []

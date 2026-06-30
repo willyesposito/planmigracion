@@ -1,11 +1,16 @@
 export type TipoFase = 'Relevamiento' | 'Configuracion' | 'Pruebas' | 'Vacaciones'
 
+/** Clasificación del recurso. Opcional: null/undefined = "sin clasificar" (se completa a mano). */
+export type RolPersona = 'relevamiento' | 'configuracion' | 'pruebas'
+
 export interface Persona {
   id: string
   alias: string
   skills: string[]
+  rol?: RolPersona | null
   capacidad_horas_semana: number
   buffer_pct: number
+  custom?: boolean   // true si se agregó desde la UI (no viene del seed)
   _nota?: string
 }
 
@@ -17,6 +22,7 @@ export interface Proyecto {
   entidades: number
   quick_win: boolean
   especial: boolean
+  custom?: boolean   // true si se agregó desde la UI
   _nota?: string
 }
 

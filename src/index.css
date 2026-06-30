@@ -35,6 +35,9 @@ html, body, #root {
   --ok:      #22C55E;  --ok-bg:      rgba(34,197,94,0.10);   --ok-bd:      rgba(34,197,94,0.30);   --ok-tx:      #177A50;
   --warn:    #F59E0B;  --warn-bg:    rgba(245,158,11,0.12);  --warn-bd:    rgba(245,158,11,0.32);  --warn-tx:    #9A5A0B;
   --error:   #E85518;  --error-bg:   rgba(232,85,24,0.10);   --error-bd:   rgba(232,85,24,0.30);   --error-tx:   #C0420F;
+  /* Tinte de celda por carga (timeline). Más saturado que los chips a propósito. */
+  --error-tint: rgba(232,85,24,0.15);
+  --warn-tint:  rgba(245,158,11,0.16);
 
   /* Colores de fase (H&A Design System; reemplazan los vendor colors hardcodeados) */
   --fase-relev:   #7B2FBE;       /* = --hya-seleccion del DS (antes #7c5cbf sin respaldo) */
@@ -90,6 +93,8 @@ html, body, #root {
   --ok-bg:      rgba(34,197,94,0.15);   --ok-bd:      rgba(34,197,94,0.36);   --ok-tx:      #4ADE80;
   --warn-bg:    rgba(245,158,11,0.15);  --warn-bd:    rgba(245,158,11,0.36);  --warn-tx:    #FBBF24;
   --error-bg:   rgba(232,85,24,0.16);   --error-bd:   rgba(232,85,24,0.42);   --error-tx:   #FB8254;
+  --error-tint: rgba(232,85,24,0.26);
+  --warn-tint:  rgba(245,158,11,0.24);
 
   --sh-sm: 0 1px 4px rgba(0,0,0,0.40);
   --sh:    0 8px 28px rgba(0,0,0,0.50);
@@ -117,3 +122,17 @@ button, input, select {
 ::-webkit-scrollbar-track { background: var(--line-soft); }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--t3); }
+
+/* Impresión: solo la hoja del Resumen ejecutivo */
+@media print {
+  html, body, #root { height: auto; overflow: visible; background: #fff; }
+  body * { visibility: hidden !important; }
+  #reporte-print, #reporte-print * { visibility: visible !important; }
+  #reporte-print {
+    position: absolute !important; left: 0; top: 0; width: 100% !important;
+    box-shadow: none !important; border-radius: 0 !important; padding: 24px 32px !important;
+  }
+  .reporte-overlay { position: absolute !important; inset: 0; background: #fff !important; padding: 0 !important; overflow: visible !important; }
+  .reporte-chrome { display: none !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
