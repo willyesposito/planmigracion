@@ -3,14 +3,8 @@ import { format, addDays } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useSimuladorStore } from '../store'
 import type { TipoFase } from '../types'
+import { TIPO_COLOR } from '../theme/fases'
 import { getSemanas, semanaIndex, getMondayOfWeek, parseDate } from '../utils/dates'
-
-const TIPO_COLOR: Record<TipoFase, string> = {
-  Relevamiento: '#7c5cbf',
-  Configuracion: '#579bfc',
-  Pruebas: '#5cb85c',
-  Vacaciones: '#bbb',
-}
 
 const COL_WIDTH = 30
 const ROW_HEIGHT = 36

@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/h-a-design-system-3b5ba3d0-f16b-4d39-a26f-8a6ba3e44073/colors_and_type.css">
+<script src="_ds/h-a-design-system-3b5ba3d0-f16b-4d39-a26f-8a6ba3e44073/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { height: 100%; margin: 0; }
+  *, *::before, *::after { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(140,150,170,0.4); border-radius: 6px; border: 2px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(140,150,170,0.7); background-clip: content-box; }
+  @keyframes haFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .ha-fade { animation: haFade 0.22s cubic-bezier(.4,0,.2,1); }
+</style>
+</helmet>
+
+<div style="{{ appStyle }}">
+
+  <div style="{{ chromeStyle }}">
+
+  <!-- ░░ HEADER ░░ -->
+  <div style="display:flex;align-items:center;gap:16px;padding:0 18px;height:54px;flex-shrink:0;border-bottom:1px solid {{P.line}};background:{{P.panel}};z-index:30">
+    <div style="display:flex;align-items:center;gap:11px">
+      <img src="assets/logo-ha.png" alt="Hidalgo &amp; Asociados" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;object-fit:contain" />
+      <div style="display:flex;flex-direction:column;line-height:1.2">
+        <span style="font-weight:700;font-size:13.5px;color:{{P.ink}};letter-spacing:-0.01em">Hidalgo <span style="color:{{P.t3}};font-weight:400;font-style:italic">&amp;</span> Asociados</span>
+        <span style="font-size:9.5px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:{{P.celeste}}">Simulador de migración · Meta4 → Axton</span>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;margin-left:22px">
+      <sc-for list="{{ legend }}" as="lg" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="{{ lg.dot }}"></span>
+          <span style="font-size:11px;font-weight:600;color:{{P.t2}}">{{ lg.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div style="display:flex;gap:3px;background:{{P.panelAlt}};padding:3px;border-radius:9999px;border:1px solid {{P.line}}">
+        <button onClick="{{ setTimeline }}" style="{{ tabTimelineStyle }}">Timeline</button>
+        <button onClick="{{ setInsights }}" style="{{ tabInsightsStyle }}">Insights</button>
+      </div>
+      <button onClick="{{ toggleTheme }}" title="Cambiar tema" style="width:34px;height:34px;border-radius:9999px;border:1px solid {{P.line}};background:{{P.panel}};color:{{P.t2}};cursor:pointer;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:15px">{{ themeIcon }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ░░ CONFIG BAR ░░ -->
+  <div style="display:flex;align-items:center;gap:18px;padding:9px 18px;background:{{P.panelAlt}};border-bottom:1px solid {{P.line}};flex-wrap:wrap;z-index:20">
+    <div style="display:flex;align-items:center;gap:9px">
+      <span style="font-size:9.5px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}}">Perilla</span>
+      <span style="font-size:12.5px;font-weight:600;color:{{P.t2}};white-space:nowrap">Transición Susi → Toyota</span>
+      <input type="date" value="{{ transValue }}" onChange="{{ onTransInput }}" style="padding:5px 9px;border:1px solid {{P.line}};border-radius:8px;font-size:12.5px;font-weight:600;background:{{P.panel}};color:{{P.ink}};font-family:inherit" />
+      <sc-if value="{{ transValue }}" hint-placeholder-val="">
+        <button onClick="{{ clearTrans }}" title="Limpiar" style="width:24px;height:24px;border:none;background:transparent;cursor:pointer;color:{{P.t3}};font-size:17px;line-height:1;border-radius:6px">×</button>
+      </sc-if>
+      <sc-for list="{{ transPresets }}" as="pr" hint-placeholder-count="2">
+        <button onClick="{{ pr.onClick }}" style="{{ pr.style }}">{{ pr.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="{{ countRojoStyle }}">● {{ rojos }} conflicto{{ rojoPlural }}</span>
+      <span style="{{ countAmbarStyle }}">● {{ ambar }} aviso{{ ambarPlural }}</span>
+      <sc-if value="{{ sinConflictos }}" hint-placeholder-val="">
+        <span style="{{ countOkStyle }}">✓ Sin conflictos</span>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <button onClick="{{ toggleCarga }}" style="{{ cargaBtnStyle }}">Carga semanal</button>
+      <button onClick="{{ toggleDep }}" style="{{ depBtnStyle }}">Dependencias</button>
+      <button onClick="{{ openReport }}" style="{{ resumenBtnStyle }}">Resumen ejecutivo</button>
+      <button onClick="{{ onReset }}" style="padding:6px 15px;border:1px solid {{P.line}};border-radius:9999px;background:{{P.panel}};cursor:pointer;font-size:12px;font-weight:700;color:{{P.t2}};font-family:inherit">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- ░░ BODY ░░ -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
+
+  <sc-if value="{{ isTimeline }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;display:flex;overflow:hidden;min-height:0">
+
+    <!-- ── RAIL DE CUENTAS ── -->
+    <div style="width:218px;flex-shrink:0;border-right:1px solid {{P.line}};background:{{P.panelAlt}};display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:9px 11px 9px 15px;border-bottom:1px solid {{P.line}};display:flex;align-items:center;gap:7px">
+        <span style="font-size:9.5px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}};flex:1">{{ accountsCount }} cuentas</span>
+        <button onClick="{{ openTeam }}" title="Gestionar equipo" style="{{ addCuentaBtnStyle }}">Equipo</button>
+        <button onClick="{{ openCuenta }}" title="Agregar cuenta" style="{{ addCuentaBtnStyle }}">+ Cuenta</button>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        <sc-for list="{{ accounts }}" as="ac" hint-placeholder-count="10">
+          <button onClick="{{ ac.onClick }}" style="{{ ac.rowStyle }}">
+            <span style="{{ ac.dotStyle }}"></span>
+            <span style="flex:1;min-width:0;text-align:left">
+              <span style="display:block;font-size:13px;font-weight:600;color:{{P.ink}};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ac.nombre }}</span>
+              <span style="display:block;font-size:10.5px;color:{{P.t3}}">{{ ac.dateText }}</span>
+            </span>
+            <span style="display:flex;gap:3px;flex-shrink:0">
+              <sc-for list="{{ ac.badges }}" as="bd" hint-placeholder-count="0">
+                <span style="{{ bd.style }}">{{ bd.text }}</span>
+              </sc-for>
+            </span>
+          </button>
+        </sc-for>
+        <div style="margin:12px 13px;padding:9px 11px;border-radius:9px;background:{{P.celesteDim}};font-size:10.5px;line-height:1.45;color:{{P.t2}}">
+          <strong style="color:{{P.celeste}}">Privacidad.</strong> Solo alias del equipo y nombres comerciales. No cargues datos personales.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TIMELINE ── -->
+    <div ref="{{ scRef }}" style="flex:1;overflow:auto;position:relative;background:{{P.panel}};min-width:0">
+      <div style="{{ contentStyle }}">
+
+        <!-- Header de semanas -->
+        <div style="{{ headerRowStyle }}">
+          <div style="{{ cornerStyle }}">Persona</div>
+          <sc-for list="{{ weeks }}" as="wk" hint-placeholder-count="60">
+            <div style="{{ wk.cellStyle }}">
+              <span style="{{ wk.monthStyle }}">{{ wk.monthLabel }}</span>
+              <span style="{{ wk.dayStyle }}">{{ wk.dayLabel }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- Filas -->
+        <div ref="{{ rowsRef }}" style="position:relative">
+
+          <!-- Overlay: dependencias + transición -->
+          <svg style="{{ svgStyle }}" width="{{ totalW }}" height="{{ rowsHeight }}">
+            <sc-for list="{{ depPaths }}" as="dp" hint-placeholder-count="0">
+              <path d="{{ dp.d }}" fill="none" stroke="{{ dp.stroke }}" stroke-width="2" stroke-dasharray="{{ dp.dash }}" marker-end="url(#haArrow)"></path>
+            </sc-for>
+            <defs>
+              <marker id="haArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="{{ arrowFill }}"></path>
+              </marker>
+            </defs>
+          </svg>
+          <sc-if value="{{ transLine }}" hint-placeholder-val="">
+            <div style="{{ transLineStyle }}"></div>
+            <div style="{{ transLabelStyle }}">Susi → Toyota</div>
+          </sc-if>
+
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="13">
+            <div style="{{ row.rowStyle }}">
+              <sc-for list="{{ row.tints }}" as="tn" hint-placeholder-count="0">
+                <div style="{{ tn.style }}" title="{{ tn.title }}"></div>
+              </sc-for>
+              <div style="{{ row.nameStyle }}">
+                <span style="font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">{{ row.alias }}</span>
+                <span style="{{ row.rolTagStyle }}">{{ row.rolLabel }}</span>
+              </div>
+              <sc-for list="{{ row.bars }}" as="bar" hint-placeholder-count="0">
+                <div onMouseDown="{{ bar.onDown }}" style="{{ bar.style }}" title="{{ bar.title }}">
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none">{{ bar.label }}</span>
+                  <sc-if value="{{ bar.resizable }}" hint-placeholder-val="">
+                    <div onMouseDown="{{ bar.onResize }}" style="{{ bar.gripStyle }}"></div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL DE DETALLE ── -->
+    <div style="width:336px;flex-shrink:0;border-left:1px solid {{P.line}};background:{{P.panelAlt}};overflow-y:auto">
+      <sc-if value="{{ hasSelection }}" hint-placeholder-val="">
+        <div class="ha-fade" style="padding:18px 17px">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
+            <h2 style="margin:0;font-size:20px;font-weight:800;color:{{P.ink}};letter-spacing:-0.01em">{{ sel.nombre }}</h2>
+            <sc-for list="{{ sel.badges }}" as="bd" hint-placeholder-count="0">
+              <span style="{{ bd.style }}">{{ bd.text }}</span>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:7px;margin:14px 0 16px;padding:9px 11px;border-radius:11px;background:{{P.panel}};border:1px solid {{P.line}}">
+            <span style="font-size:11px;font-weight:700;color:{{P.t2}};flex:1">Mover cuenta entera</span>
+            <button onClick="{{ sel.moveLeft }}" title="Atrasar 1 semana" style="{{ stepBtnStyle }}">◀ 1 sem</button>
+            <button onClick="{{ sel.moveRight }}" title="Adelantar 1 semana" style="{{ stepBtnStyle }}">1 sem ▶</button>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:13px">
+            <sc-for list="{{ sel.phases }}" as="ph" hint-placeholder-count="3">
+              <div style="{{ ph.cardStyle }}">
+                <div style="{{ ph.headStyle }}">
+                  <span style="color:#fff;font-weight:700;font-size:13px">{{ ph.tipoLabel }}</span>
+                  <sc-if value="{{ ph.flag }}" hint-placeholder-val="">
+                    <span style="{{ ph.flagStyle }}">{{ ph.flagText }}</span>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ ph.exists }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:13px 14px">
+                    <div style="display:flex;gap:14px;flex-wrap:wrap">
+                      <div style="flex:1;min-width:120px">
+                        <label style="{{ fieldLabelStyle }}">Asignado a</label>
+                        <select value="{{ ph.persona_id }}" onChange="{{ ph.onPersona }}" style="{{ selectStyle }}">
+                          <sc-for list="{{ ph.personaOptions }}" as="op" hint-placeholder-count="13">
+                            <option value="{{ op.id }}">{{ op.alias }}</option>
+                          </sc-for>
+                        </select>
+                      </div>
+                      <div>
+                        <label style="{{ fieldLabelStyle }}">Duración</label>
+                        <div style="display:flex;align-items:center;gap:6px">
+                          <button onClick="{{ ph.durMinus }}" style="{{ roundBtnStyle }}">−</button>
+                          <span style="min-width:54px;text-align:center;font-size:13.5px;font-weight:700;color:{{P.ink}}">{{ ph.dur }} d</span>
+                          <button onClick="{{ ph.durPlus }}" style="{{ roundBtnStyle }}">+</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:11px">
+                      <div>
+                        <label style="{{ fieldLabelStyle }}">Inicio</label>
+                        <input type="date" value="{{ ph.inicio }}" onChange="{{ ph.onStart }}" style="{{ dateInputStyle }}" />
+                      </div>
+                      <div>
+                        <label style="{{ fieldLabelStyle }}">Fin (calculado)</label>
+                        <div style="{{ finBoxStyle }}">{{ ph.finText }}</div>
+                      </div>
+                    </div>
+                    <sc-for list="{{ ph.msgs }}" as="m" hint-placeholder-count="0">
+                      <div style="{{ m.style }}">{{ m.text }}</div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ ph.empty }}" hint-placeholder-val="">
+                  <div style="padding:13px 14px;color:{{P.t3}};font-size:12.5px;font-style:italic">Sin planificar</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noSelection }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:40px 26px;text-align:center;color:{{P.t3}}">
+          <div style="font-size:30px;margin-bottom:12px">⠿</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.55;color:{{P.t3}}">Arrastrá una barra en el timeline o elegí una cuenta para mover sus fases y ver el impacto al instante.</p>
+          <p style="margin:14px 0 0;font-size:11.5px;line-height:1.55;color:{{P.t3}}">Arrastre horizontal = mover en el tiempo · vertical = reasignar persona · borde derecho = estirar. <strong style="color:{{P.celeste}}">Shift</strong> mueve toda la cuenta.</p>
+        </div>
+      </sc-if>
+    </div>
+
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isInsights }}" hint-placeholder-val="">
+    <div class="ha-fade" style="flex:1;overflow:auto;padding:22px 26px;background:{{P.pageBg}}">
+      <div style="max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:11px">
+          <sc-for list="{{ insights.kpis }}" as="k" hint-placeholder-count="6">
+            <div style="border:1px solid {{P.line}};border-radius:13px;padding:14px 15px;background:{{P.panel}}">
+              <div style="font-size:23px;font-weight:800;line-height:1.05;color:{{ k.color }}">{{ k.value }}</div>
+              <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:{{P.t3}};margin-top:5px">{{ k.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1px solid {{P.line}};border-radius:14px;padding:17px 18px;background:{{P.panel}}">
+            <div style="font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}};margin-bottom:14px">Conflictos por regla</div>
+            <sc-for list="{{ insights.conflictosRegla }}" as="r" hint-placeholder-count="3">
+              <div style="margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:{{P.t2}};margin-bottom:4px"><span>{{ r.label }}</span><span style="font-weight:800;color:{{P.ink}}">{{ r.value }}</span></div>
+                <div style="height:8px;border-radius:6px;background:{{P.lineSoft}};overflow:hidden"><div style="height:100%;width:{{ r.w }}%;background:{{ r.color }};border-radius:6px"></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="border:1px solid {{P.line}};border-radius:14px;padding:17px 18px;background:{{P.panel}}">
+            <div style="font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}};margin-bottom:14px">Cuentas por estado</div>
+            <div style="display:flex;gap:11px">
+              <div style="flex:1;text-align:center;padding:13px 6px;border-radius:11px;background:rgba(34,197,94,0.10)"><div style="font-size:25px;font-weight:800;color:#22C55E">{{ insights.estVerde }}</div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:{{P.t2}};margin-top:3px">En curso</div></div>
+              <div style="flex:1;text-align:center;padding:13px 6px;border-radius:11px;background:rgba(245,158,11,0.12)"><div style="font-size:25px;font-weight:800;color:#F59E0B">{{ insights.estAmbar }}</div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:{{P.t2}};margin-top:3px">Atención</div></div>
+              <div style="flex:1;text-align:center;padding:13px 6px;border-radius:11px;background:rgba(232,85,24,0.10)"><div style="font-size:25px;font-weight:800;color:#E85518">{{ insights.estRojo }}</div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:{{P.t2}};margin-top:3px">Riesgo</div></div>
+            </div>
+            <div style="font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}};margin:19px 0 12px">Entregas por trimestre</div>
+            <sc-for list="{{ insights.entregasTri }}" as="t" hint-placeholder-count="4">
+              <div style="margin-bottom:9px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:{{P.t2}};margin-bottom:4px"><span>{{ t.label }}</span><span style="font-weight:800;color:{{P.ink}}">{{ t.value }}</span></div>
+                <div style="height:8px;border-radius:6px;background:{{P.lineSoft}};overflow:hidden"><div style="height:100%;width:{{ t.w }}%;background:{{P.celeste}};border-radius:6px"></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="border:1px solid {{P.line}};border-radius:14px;padding:17px 18px;background:{{P.panel}}">
+          <div style="font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:{{P.celeste}};margin-bottom:14px">Carga del equipo — semanas sobreasignadas (&gt;100%)</div>
+          <sc-for list="{{ insights.cargaEquipo }}" as="c" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
+              <span style="width:96px;flex-shrink:0;font-size:12.5px;font-weight:700;color:{{P.ink}}">{{ c.alias }}</span>
+              <div style="flex:1;height:14px;border-radius:7px;background:{{P.lineSoft}};overflow:hidden"><div style="height:100%;width:{{ c.w }}%;background:#E85518;border-radius:7px;min-width:2px"></div></div>
+              <span style="width:128px;flex-shrink:0;text-align:right;font-size:11.5px;color:{{P.t2}}">{{ c.red }} sem · {{ c.nfases }} fases</span>
+            </div>
+          </sc-for>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+
+  </div><!-- /body -->
+
+  </div><!-- /chrome -->
+
+  <!-- ░░ RESUMEN EJECUTIVO (descargable) ░░ -->
+  <sc-if value="{{ showReport }}" hint-placeholder-val="">
+    <div style="{{ reportWrapStyle }}">
+      <div class="ha-fade" style="{{ reportSheetStyle }}">
+
+        <sc-if value="{{ notPrinting }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
+            <button onClick="{{ copyEmail }}" style="{{ repPrimaryBtn }}">{{ copyLabel }}</button>
+            <button onClick="{{ printReport }}" style="{{ repSecondaryBtn }}">Imprimir / Guardar PDF</button>
+            <button onClick="{{ closeReport }}" style="{{ repGhostBtn }}">Cerrar</button>
+          </div>
+        </sc-if>
+
+        <!-- Encabezado del reporte -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #00ACD4;padding-bottom:15px;margin-bottom:20px">
+          <div>
+            <div style="font-size:10.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#00ACD4">Resumen ejecutivo</div>
+            <h1 style="margin:5px 0 0;font-size:24px;font-weight:700;color:#1E3A5F;letter-spacing:-0.01em">Plan de migración Meta4 → Axton</h1>
+            <div style="font-size:13px;color:#8C837B;margin-top:4px">Estado al {{ rep.hoy }}</div>
+          </div>
+          <div style="width:46px;height:46px;border-radius:50%;background:#00ACD4;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;letter-spacing:-0.5px;flex-shrink:0">H&amp;A</div>
+        </div>
+
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px">
+          <sc-for list="{{ rep.kpis }}" as="k" hint-placeholder-count="4">
+            <div style="border:1px solid #DDE5EF;border-radius:11px;padding:13px 14px;background:#F4F7FA">
+              <div style="font-size:23px;font-weight:700;line-height:1.05;color:{{ k.color }}">{{ k.value }}</div>
+              <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8FA3BA;margin-top:5px">{{ k.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- Perilla -->
+        <div style="margin-bottom:22px;padding:11px 15px;border-radius:10px;background:rgba(0,172,212,0.08);font-size:13px;color:#1E3A5F">
+          <strong style="color:#00ACD4">Perilla — Transición Susi → Toyota:</strong> {{ rep.transTxt }}
+        </div>
+
+        <!-- Riesgos -->
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#00ACD4;margin-bottom:8px">Riesgos detectados</div>
+        <sc-if value="{{ rep.sinRiesgo }}" hint-placeholder-val="">
+          <div style="padding:12px 15px;border-radius:10px;background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.3);font-size:13px;color:#177A50;font-weight:600">Sin conflictos en el plan actual. Todas las cuentas respetan capacidad y dependencias.</div>
+        </sc-if>
+        <sc-if value="{{ rep.hasR1 }}" hint-placeholder-val="">
+          <div style="font-size:13px;font-weight:700;color:#1E3A5F;margin:12px 0 5px">Acantilado Susi → Toyota</div>
+          <sc-for list="{{ rep.r1 }}" as="t" hint-placeholder-count="0">
+            <div style="font-size:12.5px;line-height:1.45;color:#1E3A5F;padding:3px 0 3px 14px;position:relative"><span style="position:absolute;left:0;color:#E85518;font-weight:700">›</span>{{ t }}</div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ rep.hasR3 }}" hint-placeholder-val="">
+          <div style="font-size:13px;font-weight:700;color:#1E3A5F;margin:12px 0 5px">Dependencias fuera de orden</div>
+          <sc-for list="{{ rep.r3 }}" as="t" hint-placeholder-count="0">
+            <div style="font-size:12.5px;line-height:1.45;color:#1E3A5F;padding:3px 0 3px 14px;position:relative"><span style="position:absolute;left:0;color:#E85518;font-weight:700">›</span>{{ t }}</div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ rep.hasR2 }}" hint-placeholder-val="">
+          <div style="font-size:13px;font-weight:700;color:#1E3A5F;margin:12px 0 5px">Sobreasignación semanal</div>
+          <sc-for list="{{ rep.r2 }}" as="o" hint-placeholder-count="0">
+            <div style="font-size:12.5px;line-height:1.45;color:#1E3A5F;padding:3px 0 3px 14px;position:relative"><span style="position:absolute;left:0;color:#F59E0B;font-weight:700">›</span><strong>{{ o.alias }}</strong> — {{ o.text }}</div>
+          </sc-for>
+        </sc-if>
+
+        <!-- Cuentas -->
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#00ACD4;margin:24px 0 8px">Cuentas — orden cronológico</div>
+        <div style="border:1px solid #DDE5EF;border-radius:11px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1.5fr 0.95fr 0.85fr 1fr;background:#1E3A5F;color:#fff;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:8px 14px">
+            <span>Cuenta</span><span>Estado</span><span>Desde</span><span>Entrega est.</span>
+          </div>
+          <sc-for list="{{ rep.cuentas }}" as="c" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:1.5fr 0.95fr 0.85fr 1fr;padding:7px 14px;border-top:1px solid #EEF3F8;font-size:12px;color:#1E3A5F;align-items:center">
+              <span style="font-weight:600">{{ c.nombre }} <span style="color:#8FA3BA;font-weight:600">{{ c.flags }}</span></span>
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:{{ c.dotColor }};display:inline-block"></span>{{ c.statusLabel }}</span>
+              <span style="color:#4A6080">{{ c.desde }}</span>
+              <span style="color:#4A6080">{{ c.entrega }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- Footer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:14px;border-top:1px solid #EEF3F8">
+          <span style="font-weight:300;font-size:14px;color:#8C837B">Hidalgo &amp; Asociados</span>
+          <span style="font-size:11px;color:#8FA3BA">Simulador de migración · generado el {{ rep.hoy }}</span>
+        </div>
+        <div style="margin-top:10px;font-size:10.5px;color:#B0A8A2;line-height:1.4">Documento interno con alias del equipo y nombres comerciales de cuenta. No contiene datos personales de empleados ni clientes.</div>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ░░ MODAL: EQUIPO ░░ -->
+  <sc-if value="{{ showTeam }}" hint-placeholder-val="">
+    <div style="{{ modalWrapStyle }}" onClick="{{ closeTeam }}">
+      <div class="ha-fade" style="{{ modalCardStyle }}" onClick="{{ stop }}">
+        <div style="display:flex;align-items:center;margin-bottom:14px">
+          <h3 style="margin:0;font-size:17px;font-weight:800;color:{{P.ink}};flex:1">Equipo</h3>
+          <button onClick="{{ closeTeam }}" style="{{ modalCloseStyle }}">×</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;padding:13px;border-radius:12px;background:{{P.panelAlt}};border:1px solid {{P.line}};margin-bottom:15px">
+          <input type="text" value="{{ newAlias }}" onChange="{{ onNewAlias }}" placeholder="Alias (ej. Marcos)" style="{{ modalInputStyle }}" />
+          <div style="display:flex;gap:6px">
+            <sc-for list="{{ rolOptsForm }}" as="o" hint-placeholder-count="3">
+              <button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ addPersona }}" style="{{ modalPrimaryStyle }}">+ Agregar persona</button>
+        </div>
+        <sc-for list="{{ teamList }}" as="p" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid {{P.lineSoft}}">
+            <span style="flex:1;font-size:13.5px;font-weight:600;color:{{P.ink}}">{{ p.alias }}</span>
+            <span style="font-size:9px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:{{ p.rolColor }}">{{ p.rolLabel }}</span>
+            <span style="font-size:10.5px;color:{{P.t3}};width:52px;text-align:right">{{ p.usado }} fases</span>
+            <button onClick="{{ p.onRemove }}" title="Quitar persona" style="{{ teamRemoveStyle }}">×</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ░░ MODAL: AGREGAR CUENTA ░░ -->
+  <sc-if value="{{ showCuenta }}" hint-placeholder-val="">
+    <div style="{{ modalWrapStyle }}" onClick="{{ closeCuenta }}">
+      <div class="ha-fade" style="{{ modalCardStyle }}" onClick="{{ stop }}">
+        <div style="display:flex;align-items:center;margin-bottom:16px">
+          <h3 style="margin:0;font-size:17px;font-weight:800;color:{{P.ink}};flex:1">Agregar cuenta</h3>
+          <button onClick="{{ closeCuenta }}" style="{{ modalCloseStyle }}">×</button>
+        </div>
+        <div style="margin-bottom:13px">
+          <label style="{{ fieldLabelStyle }}">Nombre de la cuenta</label>
+          <input type="text" value="{{ newCuentaNombre }}" onChange="{{ onCuentaNombre }}" placeholder="Ej. Nueva Cuenta SA" style="{{ modalInputStyle }}" />
+        </div>
+        <div style="margin-bottom:15px">
+          <label style="{{ fieldLabelStyle }}">Inicio del relevamiento</label>
+          <input type="date" value="{{ newCuentaInicio }}" onChange="{{ onCuentaInicio }}" style="{{ modalInputStyle }}" />
+        </div>
+        <button onClick="{{ addCuenta }}" style="{{ modalPrimaryStyle }}">Crear cuenta + fases</button>
+        <p style="font-size:11px;color:{{P.t3}};margin-top:11px;line-height:1.5">Se crean 3 fases encadenadas (Relevamiento → Configuración → Pruebas) asignadas automáticamente por rol. Después las movés en el timeline.</p>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:820},&quot;colW&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:32,&quot;min&quot;:22,&quot;max&quot;:48,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Timeline&quot;,&quot;label&quot;:&quot;Ancho de semana&quot;},&quot;mostrarCarga&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Timeline&quot;,&quot;label&quot;:&quot;Mostrar carga semanal&quot;},&quot;mostrarDependencias&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Timeline&quot;,&quot;label&quot;:&quot;Mostrar dependencias&quot;},&quot;temaInicial&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Timeline&quot;,&quot;label&quot;:&quot;Tema inicial&quot;}}">
+const DAY = 86400000;
+const MES3 = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MES_LARGO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const KEY = 'simulador-ha-dc-v1';
+const TIPO_COLOR = { Relevamiento:'#7B2FBE', Configuracion:'#0E86C4', Pruebas:'#2FA35A', Vacaciones:'#8C837B' };
+const TIPO_SHORT = { Relevamiento:'Relev.', Configuracion:'Config.', Pruebas:'Pruebas', Vacaciones:'' };
+const TIPO_LABEL = { Relevamiento:'Relevamiento', Configuracion:'Configuración', Pruebas:'Pruebas', Vacaciones:'Bloqueo' };
+const ORDEN = ['Relevamiento','Configuracion','Pruebas'];
+const ROL_INFO = { relevamiento:{label:'Relev.',color:'#7B2FBE'}, configuracion:{label:'Config.',color:'#0E86C4'}, pruebas:{label:'Pruebas',color:'#2FA35A'} };
+
+class Component extends DCLogic {
+  static PERSONAS = [
+    {id:'susi',alias:'Susi',rol:'configuracion'},{id:'moni',alias:'Moni',rol:'configuracion'},{id:'leo',alias:'Leo',rol:'relevamiento'},{id:'lau',alias:'Lau',rol:'relevamiento'},
+    {id:'sergio',alias:'Sergio',rol:'relevamiento'},{id:'lucas',alias:'Lucas',rol:'pruebas'},{id:'florencia',alias:'Florencia',rol:'pruebas'},
+    {id:'melina',alias:'Melina',rol:'pruebas'},{id:'araceli',alias:'Araceli',rol:'pruebas'},{id:'candela',alias:'Candela',rol:'pruebas'},
+    {id:'agustina_c',alias:'Agustina C.',rol:'pruebas'},{id:'veronica',alias:'Verónica',rol:'pruebas'},{id:'consultor_payroll',alias:'Cons. Payroll',rol:'pruebas'}
+  ];
+  static PROY = [
+    {id:'tim',nombre:'TIM',entidades:1,quick_win:false,especial:false},
+    {id:'allegro',nombre:'Allegro',entidades:1,quick_win:false,especial:false},
+    {id:'piano',nombre:'Piano',entidades:1,quick_win:false,especial:false},
+    {id:'marval',nombre:'Marval',entidades:1,quick_win:false,especial:false},
+    {id:'finadiet',nombre:'Finadiet',entidades:1,quick_win:false,especial:false},
+    {id:'dla',nombre:'DLA',entidades:1,quick_win:false,especial:false},
+    {id:'pof',nombre:'POF',entidades:1,quick_win:false,especial:false},
+    {id:'tasa',nombre:'TASA',entidades:1,quick_win:false,especial:true},
+    {id:'carrier',nombre:'Carrier',entidades:2,quick_win:false,especial:false},
+    {id:'lowsedo',nombre:'Lowsedo',entidades:3,quick_win:false,especial:false},
+    {id:'copetro',nombre:'Copetro',entidades:1,quick_win:false,especial:false},
+    {id:'sportline',nombre:'Sportline',entidades:4,quick_win:false,especial:false},
+    {id:'bonafide',nombre:'Bonafide',entidades:1,quick_win:true,especial:false},
+    {id:'campari',nombre:'Campari',entidades:1,quick_win:false,especial:false},
+    {id:'coty',nombre:'Coty',entidades:1,quick_win:false,especial:false},
+    {id:'gsma',nombre:'GSMA',entidades:1,quick_win:true,especial:false},
+    {id:'aysa',nombre:'Aysa',entidades:1,quick_win:false,especial:false},
+    {id:'ford',nombre:'Ford',entidades:1,quick_win:false,especial:false}
+  ];
+  static ASIG = [
+    {id:'vac-leo-ene26',proyecto_id:null,tipo:'Vacaciones',persona_id:'leo',inicio:'2026-01-05',fin:'2026-01-16',duracion_dias:10,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Vacaciones'},
+    {id:'vac-lau-ene26',proyecto_id:null,tipo:'Vacaciones',persona_id:'lau',inicio:'2026-01-19',fin:'2026-01-30',duracion_dias:10,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Vacaciones'},
+    {id:'otros-retroact',proyecto_id:null,tipo:'Configuracion',persona_id:'susi',inicio:'2026-01-19',fin:'2026-02-13',duracion_dias:20,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Retroactivos y Repaso'},
+    {id:'otros-geo-susi',proyecto_id:null,tipo:'Configuracion',persona_id:'susi',inicio:'2025-12-22',fin:'2026-02-09',duracion_dias:36,dedicacion_pct:0.5,predecesoras:[],es_bloqueo:true,_nombre:'Config Geo'},
+    {id:'otros-geo-moni',proyecto_id:null,tipo:'Configuracion',persona_id:'moni',inicio:'2025-12-22',fin:'2026-02-09',duracion_dias:36,dedicacion_pct:0.5,predecesoras:[],es_bloqueo:true,_nombre:'Config Geo'},
+    {id:'tim-relev',proyecto_id:'tim',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-01-22',fin:'2026-02-10',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'allegro-relev',proyecto_id:'allegro',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-02-01',fin:'2026-02-15',duracion_dias:10,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'piano-relev',proyecto_id:'piano',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-02-16',fin:'2026-03-02',duracion_dias:11,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'marval-relev',proyecto_id:'marval',tipo:'Relevamiento',persona_id:'susi',inicio:'2026-02-16',fin:'2026-03-16',duracion_dias:21,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'vac-moni-feb26',proyecto_id:null,tipo:'Vacaciones',persona_id:'moni',inicio:'2026-02-09',fin:'2026-02-13',duracion_dias:5,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Vacaciones'},
+    {id:'allegro-config',proyecto_id:'allegro',tipo:'Configuracion',persona_id:'moni',inicio:'2026-02-17',fin:'2026-03-10',duracion_dias:16,dedicacion_pct:1,predecesoras:['allegro-relev'],es_bloqueo:false},
+    {id:'allegro-pruebas',proyecto_id:'allegro',tipo:'Pruebas',persona_id:'florencia',inicio:'2026-03-11',fin:'2026-03-18',duracion_dias:6,dedicacion_pct:1,predecesoras:['allegro-config'],es_bloqueo:false},
+    {id:'vac-moni-mar26',proyecto_id:null,tipo:'Vacaciones',persona_id:'moni',inicio:'2026-03-09',fin:'2026-03-13',duracion_dias:5,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Vacaciones'},
+    {id:'finadiet-relev',proyecto_id:'finadiet',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-03-08',fin:'2026-03-25',duracion_dias:13,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'tim-config',proyecto_id:'tim',tipo:'Configuracion',persona_id:'moni',inicio:'2026-03-16',fin:'2026-04-08',duracion_dias:18,dedicacion_pct:1,predecesoras:['tim-relev'],es_bloqueo:false},
+    {id:'vac-susi-abr26',proyecto_id:null,tipo:'Vacaciones',persona_id:'susi',inicio:'2026-03-30',fin:'2026-04-21',duracion_dias:17,dedicacion_pct:1,predecesoras:[],es_bloqueo:true,_nombre:'Vacaciones'},
+    {id:'tim-pruebas',proyecto_id:'tim',tipo:'Pruebas',persona_id:'florencia',inicio:'2026-04-09',fin:'2026-04-23',duracion_dias:11,dedicacion_pct:1,predecesoras:['tim-config'],es_bloqueo:false},
+    {id:'piano-config',proyecto_id:'piano',tipo:'Configuracion',persona_id:'moni',inicio:'2026-04-13',fin:'2026-05-04',duracion_dias:16,dedicacion_pct:1,predecesoras:['piano-relev'],es_bloqueo:false},
+    {id:'pof-relev',proyecto_id:'pof',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-04-23',fin:'2026-05-12',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'dla-relev',proyecto_id:'dla',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-03-31',fin:'2026-04-17',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'finadiet-config',proyecto_id:'finadiet',tipo:'Configuracion',persona_id:'susi',inicio:'2026-05-04',fin:'2026-05-27',duracion_dias:17,dedicacion_pct:1,predecesoras:['finadiet-relev'],es_bloqueo:false},
+    {id:'tasa-relev',proyecto_id:'tasa',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-05-04',fin:'2026-07-03',duracion_dias:45,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'piano-pruebas',proyecto_id:'piano',tipo:'Pruebas',persona_id:'melina',inicio:'2026-05-05',fin:'2026-05-12',duracion_dias:6,dedicacion_pct:1,predecesoras:['piano-config'],es_bloqueo:false},
+    {id:'dla-config',proyecto_id:'dla',tipo:'Configuracion',persona_id:'moni',inicio:'2026-05-06',fin:'2026-06-01',duracion_dias:19,dedicacion_pct:1,predecesoras:['dla-relev'],es_bloqueo:false},
+    {id:'finadiet-pruebas',proyecto_id:'finadiet',tipo:'Pruebas',persona_id:'candela',inicio:'2026-05-17',fin:'2026-05-31',duracion_dias:10,dedicacion_pct:1,predecesoras:['finadiet-config'],es_bloqueo:false},
+    {id:'carrier-relev',proyecto_id:'carrier',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-05-18',fin:'2026-06-04',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'pof-config',proyecto_id:'pof',tipo:'Configuracion',persona_id:'moni',inicio:'2026-06-02',fin:'2026-06-25',duracion_dias:18,dedicacion_pct:1,predecesoras:['pof-relev'],es_bloqueo:false},
+    {id:'dla-pruebas',proyecto_id:'dla',tipo:'Pruebas',persona_id:'agustina_c',inicio:'2026-06-02',fin:'2026-06-16',duracion_dias:11,dedicacion_pct:1,predecesoras:['dla-config'],es_bloqueo:false},
+    {id:'carrier-config',proyecto_id:'carrier',tipo:'Configuracion',persona_id:'susi',inicio:'2026-06-05',fin:'2026-06-30',duracion_dias:18,dedicacion_pct:1,predecesoras:['carrier-relev'],es_bloqueo:false},
+    {id:'lowsedo-relev',proyecto_id:'lowsedo',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-06-11',fin:'2026-07-09',duracion_dias:21,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'pof-pruebas',proyecto_id:'pof',tipo:'Pruebas',persona_id:'candela',inicio:'2026-06-26',fin:'2026-07-10',duracion_dias:11,dedicacion_pct:1,predecesoras:['pof-config'],es_bloqueo:false},
+    {id:'marval-config',proyecto_id:'marval',tipo:'Configuracion',persona_id:'moni',inicio:'2026-07-01',fin:'2026-08-12',duracion_dias:30,dedicacion_pct:1,predecesoras:['marval-relev'],es_bloqueo:false},
+    {id:'carrier-pruebas',proyecto_id:'carrier',tipo:'Pruebas',persona_id:'agustina_c',inicio:'2026-07-01',fin:'2026-07-15',duracion_dias:11,dedicacion_pct:1,predecesoras:['carrier-config'],es_bloqueo:false},
+    {id:'tasa-config',proyecto_id:'tasa',tipo:'Configuracion',persona_id:'susi',inicio:'2026-07-06',fin:'2027-01-04',duracion_dias:131,dedicacion_pct:1,predecesoras:['tasa-relev'],es_bloqueo:false},
+    {id:'copetro-relev',proyecto_id:'copetro',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-07-16',fin:'2026-08-13',duracion_dias:21,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'marval-pruebas',proyecto_id:'marval',tipo:'Pruebas',persona_id:'araceli',inicio:'2026-08-13',fin:'2026-08-27',duracion_dias:10,dedicacion_pct:1,predecesoras:['marval-config'],es_bloqueo:false},
+    {id:'lowsedo-config',proyecto_id:'lowsedo',tipo:'Configuracion',persona_id:'moni',inicio:'2026-08-19',fin:'2026-09-30',duracion_dias:31,dedicacion_pct:1,predecesoras:['lowsedo-relev'],es_bloqueo:false},
+    {id:'sportline-relev',proyecto_id:'sportline',tipo:'Relevamiento',persona_id:'leo',inicio:'2026-08-20',fin:'2026-09-17',duracion_dias:21,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'lowsedo-pruebas',proyecto_id:'lowsedo',tipo:'Pruebas',persona_id:'veronica',inicio:'2026-08-26',fin:'2026-09-09',duracion_dias:10,dedicacion_pct:1,predecesoras:['lowsedo-config'],es_bloqueo:false},
+    {id:'bonafide-relev',proyecto_id:'bonafide',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-09-22',fin:'2026-10-06',duracion_dias:11,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'campari-relev',proyecto_id:'campari',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-10-08',fin:'2026-10-27',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'copetro-config',proyecto_id:'copetro',tipo:'Configuracion',persona_id:'moni',inicio:'2026-10-08',fin:'2026-11-19',duracion_dias:31,dedicacion_pct:1,predecesoras:['copetro-relev'],es_bloqueo:false},
+    {id:'copetro-pruebas',proyecto_id:'copetro',tipo:'Pruebas',persona_id:'candela',inicio:'2026-10-14',fin:'2026-10-28',duracion_dias:10,dedicacion_pct:1,predecesoras:['copetro-config'],es_bloqueo:false},
+    {id:'coty-relev',proyecto_id:'coty',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-10-29',fin:'2026-11-16',duracion_dias:13,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'tasa-pruebas',proyecto_id:'tasa',tipo:'Pruebas',persona_id:'lau',inicio:'2026-11-02',fin:'2027-01-15',duracion_dias:55,dedicacion_pct:1,predecesoras:['tasa-config'],es_bloqueo:false},
+    {id:'gsma-relev',proyecto_id:'gsma',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-11-18',fin:'2026-12-02',duracion_dias:11,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'sportline-config',proyecto_id:'sportline',tipo:'Configuracion',persona_id:'moni',inicio:'2026-11-25',fin:'2027-01-06',duracion_dias:31,dedicacion_pct:1,predecesoras:['sportline-relev'],es_bloqueo:false},
+    {id:'sportline-pruebas',proyecto_id:'sportline',tipo:'Pruebas',persona_id:'consultor_payroll',inicio:'2026-11-25',fin:'2026-12-09',duracion_dias:10,dedicacion_pct:1,predecesoras:['sportline-config'],es_bloqueo:false},
+    {id:'bonafide-pruebas',proyecto_id:'bonafide',tipo:'Pruebas',persona_id:'sergio',inicio:'2026-12-16',fin:'2026-12-23',duracion_dias:5,dedicacion_pct:1,predecesoras:['bonafide-config'],es_bloqueo:false},
+    {id:'aysa-relev',proyecto_id:'aysa',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-12-07',fin:'2026-12-24',duracion_dias:14,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'ford-relev',proyecto_id:'ford',tipo:'Relevamiento',persona_id:'lau',inicio:'2026-12-28',fin:'2027-01-13',duracion_dias:13,dedicacion_pct:1,predecesoras:[],es_bloqueo:false},
+    {id:'campari-pruebas',proyecto_id:'campari',tipo:'Pruebas',persona_id:'sergio',inicio:'2027-01-10',fin:'2027-01-24',duracion_dias:10,dedicacion_pct:1,predecesoras:['campari-config'],es_bloqueo:false},
+    {id:'coty-config',proyecto_id:'coty',tipo:'Configuracion',persona_id:'moni',inicio:'2027-01-12',fin:'2027-02-05',duracion_dias:19,dedicacion_pct:1,predecesoras:['coty-relev'],es_bloqueo:false},
+    {id:'bonafide-config',proyecto_id:'bonafide',tipo:'Configuracion',persona_id:'susi',inicio:'2027-01-18',fin:'2027-02-08',duracion_dias:16,dedicacion_pct:1,predecesoras:['bonafide-relev'],es_bloqueo:false},
+    {id:'campari-config',proyecto_id:'campari',tipo:'Configuracion',persona_id:'moni',inicio:'2027-02-10',fin:'2027-03-05',duracion_dias:18,dedicacion_pct:1,predecesoras:['campari-relev'],es_bloqueo:false},
+    {id:'gsma-config',proyecto_id:'gsma',tipo:'Configuracion',persona_id:'susi',inicio:'2027-02-12',fin:'2027-03-05',duracion_dias:16,dedicacion_pct:1,predecesoras:['gsma-relev'],es_bloqueo:false},
+    {id:'coty-pruebas',proyecto_id:'coty',tipo:'Pruebas',persona_id:'sergio',inicio:'2027-02-03',fin:'2027-02-17',duracion_dias:10,dedicacion_pct:1,predecesoras:['coty-config'],es_bloqueo:false},
+    {id:'gsma-pruebas',proyecto_id:'gsma',tipo:'Pruebas',persona_id:'sergio',inicio:'2027-02-24',fin:'2027-03-03',duracion_dias:5,dedicacion_pct:1,predecesoras:['gsma-config'],es_bloqueo:false},
+    {id:'ford-config',proyecto_id:'ford',tipo:'Configuracion',persona_id:'susi',inicio:'2027-03-11',fin:'2027-04-05',duracion_dias:18,dedicacion_pct:1,predecesoras:['ford-relev'],es_bloqueo:false},
+    {id:'aysa-config',proyecto_id:'aysa',tipo:'Configuracion',persona_id:'moni',inicio:'2027-03-12',fin:'2027-04-06',duracion_dias:18,dedicacion_pct:1,predecesoras:['aysa-relev'],es_bloqueo:false},
+    {id:'aysa-pruebas',proyecto_id:'aysa',tipo:'Pruebas',persona_id:'agustina_c',inicio:'2027-03-21',fin:'2027-04-04',duracion_dias:10,dedicacion_pct:1,predecesoras:['aysa-config'],es_bloqueo:false},
+    {id:'ford-pruebas',proyecto_id:'ford',tipo:'Pruebas',persona_id:'consultor_payroll',inicio:'2027-05-04',fin:'2027-05-18',duracion_dias:10,dedicacion_pct:1,predecesoras:['ford-config'],es_bloqueo:false}
+  ];
+  static LIGHT = { pageBg:'#EEF2F7', panel:'#FFFFFF', panelAlt:'#F7F9FB', line:'#E2E6EC', lineSoft:'#EDEFF3', ink:'#1E3A5F', t2:'#4A6080', t3:'#8FA3BA', celeste:'#00ACD4', celesteDark:'#0090B4', celesteDim:'rgba(0,172,212,0.10)', grid:'#ECEFF3', rowAlt:'#FAFBFC', today:'rgba(0,172,212,0.07)', shadow:'0 6px 22px rgba(30,58,95,0.11)', shSm:'0 1px 3px rgba(30,58,95,0.12)' };
+  static DARK = { pageBg:'#0A131E', panel:'#101C2A', panelAlt:'#0D1825', line:'#22344A', lineSoft:'#1A2735', ink:'#E8F0F8', t2:'#9DB0C6', t3:'#62788F', celeste:'#27C3E6', celesteDark:'#16A6C6', celesteDim:'rgba(39,195,230,0.15)', grid:'#172533', rowAlt:'#0C1622', today:'rgba(39,195,230,0.10)', shadow:'0 12px 32px rgba(0,0,0,0.55)', shSm:'0 1px 3px rgba(0,0,0,0.45)' };
+
+  constructor(props) {
+    super(props);
+    this.NAME_W = 132; this.ROW_H = 46; this.BAR_H = 26;
+    this.base = this.mondayMs(this.s2d('2026-01-01'));
+    this.nWeeks = this.weekIdx(this.s2d('2027-05-31')) + 1;
+    this.scRef = React.createRef();
+    this.rowsRef = React.createRef();
+    this._onMove = this.onMove.bind(this);
+    this._onUp = this.onUp.bind(this);
+    this.drag = null;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+    this.state = {
+      personas: saved.personas || JSON.parse(JSON.stringify(Component.PERSONAS)),
+      proyectos: saved.proyectos || JSON.parse(JSON.stringify(Component.PROY)),
+      asignaciones: saved.asignaciones || JSON.parse(JSON.stringify(Component.ASIG)),
+      transicion: saved.transicion ?? null,
+      theme: saved.theme || (this.props.temaInicial || 'light'),
+      vista: 'timeline',
+      selectedProyecto: null,
+      draggingId: null,
+      moverCuenta: false,
+      mostrarCarga: this.props.mostrarCarga ?? true,
+      mostrarDep: this.props.mostrarDependencias ?? true,
+      report: false,
+      printMode: false,
+      copied: false,
+      showTeam: false,
+      showCuenta: false,
+      newAlias: '',
+      newRol: 'relevamiento',
+      newCuentaNombre: '',
+      newCuentaInicio: '',
+    };
+  }
+
+  componentDidMount() {
+    document.addEventListener('mousemove', this._onMove);
+    document.addEventListener('mouseup', this._onUp);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('mousemove', this._onMove);
+    document.removeEventListener('mouseup', this._onUp);
+  }
+
+  // ── date helpers (UTC) ──
+  s2d(s) { const p = s.split('-').map(Number); return Date.UTC(p[0], p[1]-1, p[2]); }
+  d2s(ms) { const d = new Date(ms); const m = String(d.getUTCMonth()+1).padStart(2,'0'); const dd = String(d.getUTCDate()).padStart(2,'0'); return d.getUTCFullYear()+'-'+m+'-'+dd; }
+  mondayMs(ms) { const wd = new Date(ms).getUTCDay(); return ms - ((wd+6)%7)*DAY; }
+  weekIdx(ms) { return Math.round((this.mondayMs(ms) - this.base) / (7*DAY)); }
+  isWeekend(ms) { const wd = new Date(ms).getUTCDay(); return wd===0 || wd===6; }
+  fmtCorta(s) { const p = s.split('-').map(Number); return p[2]+' '+MES3[p[1]-1]; }
+  fmtLarga(s) { const p = s.split('-').map(Number); return p[2] + ' de ' + MES_LARGO[p[1]-1] + ' de ' + p[0]; }
+  shift(s, w) { return this.d2s(this.s2d(s) + w*7*DAY); }
+  colW() { return this.props.colW || 32; }
+  calcFin(inicio, dur) { let ms = this.s2d(inicio); while (this.isWeekend(ms)) ms += DAY; let c = 1; while (c < dur) { ms += DAY; if (!this.isWeekend(ms)) c++; } return this.d2s(ms); }
+  busDays(a, b) { let ms = this.s2d(a), end = this.s2d(b), c = 0; if (ms > end) return 1; while (ms <= end) { if (!this.isWeekend(ms)) c++; ms += DAY; } return Math.max(1, c); }
+
+  persist() {
+    try { localStorage.setItem(KEY, JSON.stringify({ personas: this.state.personas, proyectos: this.state.proyectos, asignaciones: this.state.asignaciones, transicion: this.state.transicion, theme: this.state.theme })); } catch (e) {}
+  }
+
+  // ── drag ──
+  onBarDown(e, a) {
+    if (a.es_bloqueo) return;
+    e.preventDefault();
+    document.body.style.userSelect = 'none';
+    const accountMode = !!((e.shiftKey || this.state.moverCuenta) && a.proyecto_id);
+    let orig;
+    if (accountMode) {
+      orig = {};
+      this.state.asignaciones.filter(x => x.proyecto_id === a.proyecto_id).forEach(x => { orig[x.id] = { inicio: x.inicio, fin: x.fin }; });
+    } else {
+      orig = { inicio: a.inicio, fin: a.fin };
+    }
+    this.drag = { id: a.id, proyecto: a.proyecto_id, mode: accountMode ? 'account' : 'phase', startX: e.clientX, orig, lastW: 0, lastP: a.persona_id };
+    this.setState({ selectedProyecto: a.proyecto_id || this.state.selectedProyecto, draggingId: a.id });
+  }
+  onResizeDown(e, a) {
+    e.preventDefault(); e.stopPropagation();
+    document.body.style.userSelect = 'none';
+    this.drag = { id: a.id, mode: 'resize', startX: e.clientX, orig: { inicio: a.inicio, fin: a.fin }, lastW: 0 };
+    this.setState({ draggingId: a.id });
+  }
+  onMove(e) {
+    if (!this.drag) return;
+    const dw = Math.round((e.clientX - this.drag.startX) / this.colW());
+    let personaId = this.drag.lastP;
+    if (this.drag.mode === 'phase' && this.rowsRef.current) {
+      const rect = this.rowsRef.current.getBoundingClientRect();
+      let idx = Math.floor((e.clientY - rect.top) / this.ROW_H);
+      idx = Math.max(0, Math.min(this.state.personas.length - 1, idx));
+      personaId = this.state.personas[idx].id;
+    }
+    if (dw === this.drag.lastW && personaId === this.drag.lastP) return;
+    this.drag.lastW = dw; this.drag.lastP = personaId;
+    this.applyDrag(dw, personaId);
+  }
+  onUp() {
+    if (!this.drag) return;
+    this.drag = null;
+    document.body.style.userSelect = '';
+    this.setState({ draggingId: null });
+    this.persist();
+  }
+  applyDrag(dw, personaId) {
+    const drag = this.drag;
+    let asigs;
+    if (drag.mode === 'resize') {
+      asigs = this.state.asignaciones.map(a => {
+        if (a.id !== drag.id) return a;
+        const finMs = Math.max(this.s2d(drag.orig.fin) + dw*7*DAY, this.s2d(drag.orig.inicio));
+        const fin = this.d2s(finMs);
+        return { ...a, fin, duracion_dias: this.busDays(a.inicio, fin) };
+      });
+    } else if (drag.mode === 'account') {
+      const minW = Math.min(...Object.values(drag.orig).map(o => this.weekIdx(this.s2d(o.inicio))));
+      const d = Math.max(dw, -minW);
+      asigs = this.state.asignaciones.map(a => {
+        const o = drag.orig[a.id];
+        if (!o) return a;
+        return { ...a, inicio: this.shift(o.inicio, d), fin: this.shift(o.fin, d) };
+      });
+    } else {
+      const o = drag.orig;
+      const origW = this.weekIdx(this.s2d(o.inicio));
+      const d = Math.max(dw, -origW);
+      asigs = this.state.asignaciones.map(a => a.id === drag.id ? { ...a, inicio: this.shift(o.inicio, d), fin: this.shift(o.fin, d), persona_id: personaId } : a);
+    }
+    this.setState({ asignaciones: asigs });
+  }
+
+  // ── detail edits ──
+  upd(id, patch) {
+    const asigs = this.state.asignaciones.map(a => a.id === id ? { ...a, ...patch } : a);
+    this.setState({ asignaciones: asigs }, () => this.persist());
+  }
+  setPersona(id, v) { this.upd(id, { persona_id: v }); }
+  changeDur(a, delta) { const dur = Math.max(1, a.duracion_dias + delta); this.upd(a.id, { duracion_dias: dur, fin: this.calcFin(a.inicio, dur) }); }
+  setStart(a, v) { if (!v) return; this.upd(a.id, { inicio: v, fin: this.calcFin(v, a.duracion_dias) }); }
+  shiftAccount(pid, w) {
+    const asigs = this.state.asignaciones.map(a => a.proyecto_id === pid ? { ...a, inicio: this.shift(a.inicio, w), fin: this.shift(a.fin, w) } : a);
+    this.setState({ asignaciones: asigs }, () => this.persist());
+  }
+  selectAccount(pid) {
+    const phases = this.state.asignaciones.filter(a => a.proyecto_id === pid);
+    let minW = Infinity;
+    phases.forEach(a => { const w = this.weekIdx(this.s2d(a.inicio)); if (w < minW) minW = w; });
+    this.setState({ selectedProyecto: pid });
+    if (isFinite(minW) && this.scRef.current) this.scRef.current.scrollLeft = Math.max(0, this.NAME_W + minW*this.colW() - 120);
+  }
+  setTrans(v) { this.setState({ transicion: v || null }, () => this.persist()); }
+  reset() {
+    if (!confirm('¿Volver al plan original del board? Se descartan todos los cambios (incluye cuentas y personas agregadas).')) return;
+    this.setState({ personas: JSON.parse(JSON.stringify(Component.PERSONAS)), proyectos: JSON.parse(JSON.stringify(Component.PROY)), asignaciones: JSON.parse(JSON.stringify(Component.ASIG)), transicion: null, selectedProyecto: null }, () => this.persist());
+  }
+
+  slug(s) { return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,16) || 'cuenta'; }
+  uid(base) { const taken = new Set([...this.state.personas.map(p=>p.id), ...this.state.proyectos.map(p=>p.id), ...this.state.asignaciones.map(a=>a.id)]); let id = base, n = 2; while (taken.has(id)) id = base + '-' + (n++); return id; }
+  mondayMsIso(iso) { return this.d2s(this.mondayMs(this.s2d(iso))); }
+  defaultInicio() { const dn = new Date(); const pad = n => String(n).padStart(2,'0'); return this.shift(this.mondayMsIso(dn.getFullYear()+'-'+pad(dn.getMonth()+1)+'-'+pad(dn.getDate())), 1); }
+
+  addPersona() {
+    const alias = (this.state.newAlias || '').trim();
+    if (!alias) return;
+    const id = this.uid(this.slug(alias));
+    const persona = { id, alias, rol: this.state.newRol || 'relevamiento', capacidad_horas_semana: 40, custom: true };
+    this.setState(s => ({ personas: [...s.personas, persona], newAlias: '' }), () => this.persist());
+  }
+  removePersona(id) {
+    if (this.state.asignaciones.some(a => a.persona_id === id)) { alert('No se puede quitar: tiene fases asignadas. Reasignalas primero desde el panel de cada cuenta.'); return; }
+    this.setState(s => ({ personas: s.personas.filter(p => p.id !== id) }), () => this.persist());
+  }
+  addCuenta() {
+    const nombre = (this.state.newCuentaNombre || '').trim();
+    const inicio = this.state.newCuentaInicio;
+    if (!nombre || !inicio) { alert('Completá nombre y fecha de inicio.'); return; }
+    const pid = this.uid(this.slug(nombre));
+    const proyecto = { id: pid, nombre, entidades: 1, quick_win: false, especial: false, custom: true };
+    const personas = this.state.personas;
+    const pick = (rol) => { const m = personas.find(p => p.rol === rol); return m ? m.id : (personas[0] ? personas[0].id : 'leo'); };
+    const relevFin = this.calcFin(inicio, 10);
+    const cfgInicio = this.shift(this.mondayMsIso(relevFin), 1);
+    const cfgFin = this.calcFin(cfgInicio, 15);
+    const pruInicio = this.shift(this.mondayMsIso(cfgFin), 1);
+    const pruFin = this.calcFin(pruInicio, 8);
+    const relevId = pid + '-relev', cfgId = pid + '-config', pruId = pid + '-pruebas';
+    const nuevas = [
+      { id: relevId, proyecto_id: pid, tipo: 'Relevamiento', persona_id: pick('relevamiento'), inicio, fin: relevFin, duracion_dias: 10, dedicacion_pct: 1, predecesoras: [], es_bloqueo: false },
+      { id: cfgId, proyecto_id: pid, tipo: 'Configuracion', persona_id: pick('configuracion'), inicio: cfgInicio, fin: cfgFin, duracion_dias: 15, dedicacion_pct: 1, predecesoras: [relevId], es_bloqueo: false },
+      { id: pruId, proyecto_id: pid, tipo: 'Pruebas', persona_id: pick('pruebas'), inicio: pruInicio, fin: pruFin, duracion_dias: 8, dedicacion_pct: 1, predecesoras: [cfgId], es_bloqueo: false },
+    ];
+    this.setState(s => ({ proyectos: [...s.proyectos, proyecto], asignaciones: [...s.asignaciones, ...nuevas], showCuenta: false, newCuentaNombre: '', newCuentaInicio: '' }), () => { this.persist(); this.selectAccount(pid); });
+  }
+
+  // ── rules engine ──
+  computeViols(asigs, transicion, proyMap) {
+    const byId = new Map(asigs.map(a => [a.id, a]));
+    const redBars = new Set();
+    const cellMap = {};
+    const list = [];
+    // R1
+    if (transicion) {
+      for (const a of asigs) {
+        if (a.persona_id !== 'susi' || a.tipo !== 'Configuracion' || a.es_bloqueo) continue;
+        const p = a.proyecto_id ? proyMap.get(a.proyecto_id) : null;
+        if (p && p.especial) continue;
+        if (a.fin >= transicion) {
+          redBars.add(a.id);
+          list.push({ sev: 'rojo', rule: 'R1', asig: a.id, text: 'Susi configura ' + (p ? p.nombre : (a._nombre || a.id)) + ' después de pasar a Toyota (' + this.fmtCorta(transicion) + ')' });
+        }
+      }
+    }
+    // R3
+    for (const a of asigs) {
+      for (const pid of a.predecesoras) {
+        const pr = byId.get(pid);
+        if (!pr) continue;
+        if (a.inicio < pr.fin) {
+          redBars.add(a.id);
+          list.push({ sev: 'rojo', rule: 'R3', asig: a.id, text: this.lbl(a, proyMap) + ' arranca antes de cerrar ' + this.lbl(pr, proyMap) });
+        }
+      }
+    }
+    // R2 — carga por persona/semana
+    for (const per of this.state.personas) {
+      const phs = asigs.filter(a => a.persona_id === per.id);
+      if (!phs.length) continue;
+      for (let w = 0; w < this.nWeeks; w++) {
+        const monMs = this.base + w*7*DAY;
+        const friMs = monMs + 4*DAY;
+        const monIso = this.d2s(monMs), friIso = this.d2s(friMs);
+        let carga = 0;
+        for (const a of phs) if (a.inicio <= friIso && a.fin >= monIso) carga += a.dedicacion_pct;
+        if (carga > 1.001) {
+          cellMap[per.id + '|' + w] = 'rojo';
+          list.push({ sev: 'rojo', rule: 'R2', persona: per.id, week: w, text: per.alias + ' sobreasignada ' + Math.round(carga*100) + '% · sem. ' + this.fmtCorta(monIso) });
+        } else if (carga > 0.8 && carga < 0.999) {
+          cellMap[per.id + '|' + w] = 'ambar';
+          list.push({ sev: 'ambar', rule: 'R2', persona: per.id, week: w, text: per.alias + ' al ' + Math.round(carga*100) + '% · sem. ' + this.fmtCorta(monIso) });
+        }
+      }
+    }
+    return { redBars, cellMap, list };
+  }
+  lbl(a, proyMap) {
+    if (a.es_bloqueo) return a._nombre || a.tipo;
+    const p = a.proyecto_id ? proyMap.get(a.proyecto_id) : null;
+    return (p ? p.nombre : '') + ' ' + (TIPO_SHORT[a.tipo] || a.tipo);
+  }
+
+  toggleTheme() { this.setState(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' }), () => this.persist()); }
+
+  openReport() { this.setState({ report: true }); }
+  closeReport() { this.setState({ report: false, printMode: false }); }
+  printReport() { this.setState({ printMode: true }); setTimeout(() => { try { window.print(); } finally { setTimeout(() => this.setState({ printMode: false }), 350); } }, 160); }
+  flashCopied() { this.setState({ copied: true }); clearTimeout(this._ct); this._ct = setTimeout(() => this.setState({ copied: false }), 1800); }
+  copyEmail() {
+    const text = this._emailText || '';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => this.flashCopied()).catch(() => this.fallbackCopy(text));
+    } else { this.fallbackCopy(text); }
+  }
+  fallbackCopy(text) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); this.flashCopied(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  renderVals() {
+    const S = this.state;
+    const P = S.theme === 'dark' ? Component.DARK : Component.LIGHT;
+    const COL = this.colW(), ROW_H = this.ROW_H, NAME_W = this.NAME_W, BAR_H = this.BAR_H, BAR_TOP = (ROW_H - BAR_H) / 2;
+    const personas = S.personas;
+    const proyMap = new Map(S.proyectos.map(p => [p.id, p]));
+    const persIdx = new Map(personas.map((p, i) => [p.id, i]));
+    const asigs = S.asignaciones;
+    const byId = new Map(asigs.map(a => [a.id, a]));
+    const sel = S.selectedProyecto;
+    const totalW = NAME_W + this.nWeeks * COL;
+    const rowsHeight = personas.length * ROW_H;
+    const now = Date.now();
+
+    const V = this.computeViols(asigs, S.transicion, proyMap);
+
+    // weeks header
+    const weeks = [];
+    for (let i = 0; i < this.nWeeks; i++) {
+      const monMs = this.base + i*7*DAY;
+      const dt = new Date(monMs);
+      const isMonthStart = dt.getUTCDate() <= 7;
+      let monthLabel = '';
+      if (isMonthStart) { monthLabel = MES3[dt.getUTCMonth()].toUpperCase(); if (dt.getUTCMonth() === 0) monthLabel += ' ' + String(dt.getUTCFullYear()).slice(2); }
+      const esHoy = monMs <= now && now < monMs + 7*DAY;
+      weeks.push({
+        cellStyle: { width: COL+'px', flexShrink: 0, height: '100%', borderRight: '1px solid '+P.grid, background: esHoy ? P.today : (isMonthStart ? P.panelAlt : 'transparent'), display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', userSelect: 'none' },
+        monthStyle: { fontSize: '9px', fontWeight: 800, color: P.t2, letterSpacing: '0.04em', lineHeight: 1.1 },
+        dayStyle: { fontSize: '8px', color: P.t3, lineHeight: 1.2 },
+        monthLabel, dayLabel: String(dt.getUTCDate()),
+      });
+    }
+
+    // helper bar geometry
+    const barGeom = (a) => {
+      let sW = this.weekIdx(this.s2d(a.inicio));
+      let eW = this.weekIdx(this.s2d(a.fin));
+      if (eW < 0) return null;
+      sW = Math.max(0, sW);
+      const left = NAME_W + sW*COL + 1;
+      const width = Math.max(COL - 2, (eW - sW + 1)*COL - 2);
+      return { sW, eW, left, width };
+    };
+
+    // rows
+    const rows = personas.map((per, pi) => {
+      const phs = asigs.filter(a => a.persona_id === per.id);
+      const bars = [];
+      for (const a of phs) {
+        const g = barGeom(a);
+        if (!g) continue;
+        const isRed = V.redBars.has(a.id);
+        let ring = '', worstCell = '';
+        for (let w = g.sW; w <= g.eW; w++) { const c = V.cellMap[per.id + '|' + w]; if (c === 'rojo') worstCell = 'rojo'; else if (c === 'ambar' && worstCell !== 'rojo') worstCell = 'ambar'; }
+        const fill = isRed ? '#E85518' : (a.es_bloqueo ? (S.theme==='dark'?'rgba(120,135,155,0.45)':'rgba(140,131,123,0.5)') : TIPO_COLOR[a.tipo]);
+        const dim = sel && a.proyecto_id !== sel;
+        const isSel = sel && a.proyecto_id === sel;
+        if (worstCell === 'rojo') ring = '0 0 0 2px #E85518';
+        else if (worstCell === 'ambar') ring = '0 0 0 2px #F59E0B';
+        else if (isSel) ring = '0 0 0 2px ' + P.celeste;
+        const dragging = S.draggingId === a.id;
+        const proy = a.proyecto_id ? proyMap.get(a.proyecto_id) : null;
+        const label = a.es_bloqueo ? (a._nombre || a.tipo) : ((proy ? proy.nombre : '') + ' · ' + TIPO_SHORT[a.tipo]);
+        bars.push({
+          id: a.id,
+          label,
+          title: label + '\n' + this.fmtCorta(a.inicio) + ' → ' + this.fmtCorta(a.fin) + '  ·  ' + a.duracion_dias + ' días hábiles' + (a.es_bloqueo ? '' : '\n(arrastrá para mover · Shift = cuenta entera · borde der. = estirar)'),
+          resizable: !a.es_bloqueo,
+          onDown: (e) => this.onBarDown(e, a),
+          onResize: (e) => this.onResizeDown(e, a),
+          style: {
+            position: 'absolute', left: g.left+'px', width: g.width+'px', top: BAR_TOP+'px', height: BAR_H+'px',
+            background: fill, borderRadius: '6px', boxShadow: ring ? (ring + ', ' + P.shSm) : P.shSm,
+            opacity: a.es_bloqueo ? (dim ? 0.25 : 0.62) : (dim ? 0.38 : 1),
+            display: 'flex', alignItems: 'center', padding: '0 8px', color: '#fff',
+            fontSize: '10.5px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden',
+            cursor: a.es_bloqueo ? 'default' : (dragging ? 'grabbing' : 'grab'), zIndex: isSel ? 3 : 2,
+            transition: dragging ? 'none' : 'left .18s cubic-bezier(.4,0,.2,1), width .18s cubic-bezier(.4,0,.2,1), box-shadow .18s, opacity .18s',
+            userSelect: 'none',
+          },
+          gripStyle: { position: 'absolute', right: 0, top: 0, bottom: 0, width: '8px', cursor: 'ew-resize', borderRadius: '0 6px 6px 0', background: 'rgba(255,255,255,0.18)' },
+        });
+      }
+      // load tints
+      const tints = [];
+      if (S.mostrarCarga) {
+        for (let w = 0; w < this.nWeeks; w++) {
+          const c = V.cellMap[per.id + '|' + w];
+          if (!c) continue;
+          tints.push({
+            style: { position: 'absolute', left: (NAME_W + w*COL)+'px', top: 0, width: COL+'px', height: ROW_H+'px', background: c === 'rojo' ? 'rgba(232,85,24,0.15)' : 'rgba(245,158,11,0.16)', zIndex: 0, pointerEvents: 'none' },
+            title: '',
+          });
+        }
+      }
+      const _rol = ROL_INFO[per.rol] || null;
+      return {
+        alias: per.alias,
+        rolLabel: _rol ? _rol.label : '',
+        rolTagStyle: _rol ? { fontSize: '8.5px', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', color: _rol.color, lineHeight: 1 } : { display: 'none' },
+        rowStyle: { position: 'relative', height: ROW_H+'px', width: totalW+'px', background: pi % 2 ? P.rowAlt : P.panel, borderBottom: '1px solid '+P.lineSoft },
+        nameStyle: { position: 'sticky', left: 0, zIndex: 6, width: NAME_W+'px', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '2px', paddingLeft: '14px', color: P.ink, background: pi % 2 ? P.rowAlt : P.panel, borderRight: '1px solid '+P.line },
+        bars, tints,
+      };
+    });
+
+    // dependency paths (only for selected account)
+    const depPaths = [];
+    if (S.mostrarDep && sel) {
+      for (const a of asigs) {
+        if (a.proyecto_id !== sel) continue;
+        for (const pid of a.predecesoras) {
+          const pr = byId.get(pid);
+          if (!pr) continue;
+          const gp = barGeom(pr), ga = barGeom(a);
+          if (!gp || !ga) continue;
+          const y1 = (persIdx.get(pr.persona_id) ?? 0)*ROW_H + ROW_H/2;
+          const y2 = (persIdx.get(a.persona_id) ?? 0)*ROW_H + ROW_H/2;
+          const x1 = NAME_W + (this.weekIdx(this.s2d(pr.fin)) + 1)*COL;
+          const x2 = ga.left;
+          const viol = a.inicio < pr.fin;
+          depPaths.push({ d: 'M'+x1+' '+y1+' C '+(x1+26)+' '+y1+', '+(x2-26)+' '+y2+', '+x2+' '+y2, stroke: viol ? '#E85518' : P.celeste, dash: viol ? '0' : '5 4' });
+        }
+      }
+    }
+
+    // transition line
+    let transLine = null, transLineStyle = null, transLabelStyle = null;
+    if (S.transicion) {
+      const tw = this.weekIdx(this.s2d(S.transicion));
+      const tx = NAME_W + tw*COL;
+      transLine = true;
+      transLineStyle = { position: 'absolute', left: tx+'px', top: 0, width: 0, height: rowsHeight+'px', borderLeft: '2px dashed #E85518', zIndex: 4, pointerEvents: 'none' };
+      transLabelStyle = { position: 'absolute', left: (tx+4)+'px', top: '4px', background: '#E85518', color: '#fff', fontSize: '9.5px', fontWeight: 800, padding: '2px 7px', borderRadius: '5px', zIndex: 9, whiteSpace: 'nowrap', letterSpacing: '0.03em' };
+    }
+
+    // accounts list
+    const badgeStyle = (bg) => ({ fontSize: '9px', fontWeight: 800, background: bg, color: '#fff', borderRadius: '4px', padding: '1px 5px', letterSpacing: '0.03em' });
+    const accounts = S.proyectos.map(p => {
+      const phs = asigs.filter(a => a.proyecto_id === p.id);
+      let first = null;
+      phs.forEach(a => { if (!first || a.inicio < first) first = a.inicio; });
+      let color = 'verde';
+      for (const a of phs) {
+        if (V.redBars.has(a.id)) { color = 'rojo'; break; }
+        const g = barGeom(a); if (!g) continue;
+        for (let w = g.sW; w <= g.eW; w++) { const c = V.cellMap[a.persona_id + '|' + w]; if (c === 'rojo') { color = 'rojo'; } else if (c === 'ambar' && color === 'verde') color = 'ambar'; }
+        if (color === 'rojo') break;
+      }
+      const dotC = color === 'rojo' ? '#E85518' : color === 'ambar' ? '#F59E0B' : '#22C55E';
+      const active = p.id === sel;
+      const badges = [];
+      if (p.especial) badges.push({ text: 'TASA', style: badgeStyle('#7B2FBE') });
+      if (p.quick_win) badges.push({ text: 'QW', style: badgeStyle('#22C55E') });
+      if (p.entidades > 1) badges.push({ text: '×'+p.entidades, style: badgeStyle(P.celeste) });
+      return {
+        id: p.id, nombre: p.nombre, color,
+        onClick: () => this.selectAccount(p.id),
+        rowStyle: { display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '9px 13px', border: 'none', borderLeft: active ? '3px solid '+P.celeste : '3px solid transparent', background: active ? P.celesteDim : 'transparent', cursor: 'pointer', transition: 'background .15s' },
+        dotStyle: { width: '9px', height: '9px', borderRadius: '50%', background: dotC, flexShrink: 0 },
+        dateText: first ? 'desde ' + this.fmtCorta(first) : 'sin planificar',
+        badges,
+      };
+    }).sort((a, b) => 0);
+    // keep chronological order by first start
+    accounts.sort((a, b) => {
+      const fa = asigs.filter(x => x.proyecto_id === a.id).reduce((m, x) => !m || x.inicio < m ? x.inicio : m, null);
+      const fb = asigs.filter(x => x.proyecto_id === b.id).reduce((m, x) => !m || x.inicio < m ? x.inicio : m, null);
+      if (!fa) return 1; if (!fb) return -1; return fa < fb ? -1 : 1;
+    });
+
+    // selected detail
+    let selObj = null;
+    if (sel) {
+      const p = proyMap.get(sel);
+      const phsAll = asigs.filter(a => a.proyecto_id === sel && !a.es_bloqueo);
+      const badges = [];
+      if (p.especial) badges.push({ text: 'Especial · Toyota', style: { background: '#7B2FBE', color: '#fff', borderRadius: '6px', padding: '3px 9px', fontSize: '11px', fontWeight: 700 } });
+      if (p.quick_win) badges.push({ text: 'Quick-win', style: { background: '#22C55E', color: '#fff', borderRadius: '6px', padding: '3px 9px', fontSize: '11px', fontWeight: 700 } });
+      if (p.entidades > 1) badges.push({ text: p.entidades + ' entidades', style: { background: P.celeste, color: '#fff', borderRadius: '6px', padding: '3px 9px', fontSize: '11px', fontWeight: 700 } });
+      const phases = ORDEN.map(tipo => {
+        const a = phsAll.find(f => f.tipo === tipo) || null;
+        const color = TIPO_COLOR[tipo];
+        if (!a) {
+          return { tipoLabel: TIPO_LABEL[tipo], cardStyle: { border: '1px solid '+P.line, borderRadius: '11px', overflow: 'hidden', background: P.panel }, headStyle: { background: color, padding: '8px 13px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.55 }, exists: false, empty: true, flag: false, msgs: [], personaOptions: personas };
+        }
+        const myViols = V.list.filter(v => v.asig === a.id);
+        const overload = [];
+        const g = barGeom(a);
+        if (g) for (let w = g.sW; w <= g.eW; w++) { const c = V.cellMap[a.persona_id + '|' + w]; if (c) { const found = V.list.find(v => v.persona === a.persona_id && v.week === w); if (found && !overload.find(o => o.text === found.text)) overload.push(found); } }
+        const allMsgs = [...myViols, ...overload];
+        const hasRed = allMsgs.some(m => m.sev === 'rojo');
+        const hasAmb = allMsgs.some(m => m.sev === 'ambar');
+        return {
+          tipoLabel: TIPO_LABEL[tipo],
+          cardStyle: { border: '1px solid ' + (hasRed ? 'rgba(232,85,24,0.5)' : hasAmb ? 'rgba(245,158,11,0.5)' : P.line), borderRadius: '11px', overflow: 'hidden', background: P.panel, boxShadow: P.shSm },
+          headStyle: { background: color, padding: '8px 13px', display: 'flex', alignItems: 'center', gap: '8px' },
+          flag: hasRed || hasAmb,
+          flagText: hasRed ? 'Conflicto' : 'Atención',
+          flagStyle: { marginLeft: 'auto', background: 'rgba(255,255,255,0.25)', color: '#fff', borderRadius: '9999px', padding: '2px 9px', fontSize: '10.5px', fontWeight: 700 },
+          exists: true, empty: false,
+          persona_id: a.persona_id,
+          personaOptions: personas,
+          onPersona: (e) => this.setPersona(a.id, e.target.value),
+          dur: a.duracion_dias,
+          durMinus: () => this.changeDur(a, -1),
+          durPlus: () => this.changeDur(a, 1),
+          inicio: a.inicio,
+          onStart: (e) => this.setStart(a, e.target.value),
+          finText: this.fmtCorta(a.fin) + ' ' + a.fin.slice(0, 4),
+          msgs: allMsgs.map(m => ({ text: m.text, style: { marginTop: '8px', fontSize: '11.5px', padding: '6px 9px', borderRadius: '0 6px 6px 0', borderLeft: '3px solid ' + (m.sev === 'rojo' ? '#E85518' : '#F59E0B'), background: m.sev === 'rojo' ? 'rgba(232,85,24,0.10)' : 'rgba(245,158,11,0.12)', color: m.sev === 'rojo' ? (S.theme==='dark'?'#FB8254':'#C0420F') : (S.theme==='dark'?'#FBBF24':'#9A5A0B'), lineHeight: 1.4 } })),
+        };
+      });
+      selObj = {
+        nombre: p.nombre, badges, phases,
+        moveLeft: () => this.shiftAccount(sel, -1),
+        moveRight: () => this.shiftAccount(sel, 1),
+      };
+    }
+
+    const rojos = V.list.filter(v => v.sev === 'rojo').length;
+    const ambar = V.list.filter(v => v.sev === 'ambar').length;
+
+    // ── resumen ejecutivo (estado vivo) ──
+    const _noBloq = asigs.filter(a => !a.es_bloqueo);
+    let _maxFin = null; _noBloq.forEach(a => { if (!_maxFin || a.fin > _maxFin) _maxFin = a.fin; });
+    const _cuentasRiesgo = accounts.filter(a => a.color === 'rojo').length;
+    const _r1 = V.list.filter(v => v.rule === 'R1').map(v => v.text);
+    const _r3 = V.list.filter(v => v.rule === 'R3').map(v => v.text);
+    const _r2map = {}; V.list.filter(v => v.rule === 'R2').forEach(v => { _r2map[v.persona] = _r2map[v.persona] || { rojo: 0, ambar: 0 }; _r2map[v.persona][v.sev]++; });
+    const _alias = {}; personas.forEach(p => _alias[p.id] = p.alias);
+    const _r2 = Object.keys(_r2map).map(pid => { const o = _r2map[pid]; const parts = []; if (o.rojo) parts.push(o.rojo + ' semana' + (o.rojo > 1 ? 's' : '') + ' >100%'); if (o.ambar) parts.push(o.ambar + ' cerca del tope'); return { alias: _alias[pid] || pid, text: parts.join(' · '), rojo: o.rojo }; }).sort((a, b) => b.rojo - a.rojo);
+    const _transTxt = S.transicion ? this.fmtLarga(S.transicion) : 'sin definir';
+    const _repCuentas = accounts.map(a => {
+      const phs = asigs.filter(x => x.proyecto_id === a.id && !x.es_bloqueo);
+      let ent = null, des = null; phs.forEach(x => { if (!ent || x.fin > ent) ent = x.fin; if (!des || x.inicio < des) des = x.inicio; });
+      return { nombre: a.nombre, statusLabel: a.color === 'rojo' ? 'Riesgo' : a.color === 'ambar' ? 'Atención' : 'En curso', dotColor: a.color === 'rojo' ? '#E85518' : a.color === 'ambar' ? '#F59E0B' : '#22C55E', desde: des ? this.fmtCorta(des) : '—', entrega: ent ? this.fmtCorta(ent) + ' ' + ent.slice(0, 4) : '—', flags: a.badges.map(b => b.text).join(' ') };
+    });
+    const _dn = new Date(); const _pad = n => String(n).padStart(2, '0');
+    const _hoy = this.fmtLarga(_dn.getFullYear() + '-' + _pad(_dn.getMonth() + 1) + '-' + _pad(_dn.getDate()));
+    let _mail = 'PLAN DE MIGRACIÓN META4 → AXTON — Resumen ejecutivo\n' + _hoy + '\n\n';
+    _mail += 'ESTADO: ' + rojos + ' conflicto' + (rojos === 1 ? '' : 's') + ' · ' + ambar + ' aviso' + (ambar === 1 ? '' : 's') + '\n';
+    _mail += 'Cuentas en riesgo: ' + _cuentasRiesgo + ' de ' + accounts.length + '\n';
+    _mail += 'Entrega estimada del plan: ' + (_maxFin ? this.fmtCorta(_maxFin) + ' ' + _maxFin.slice(0, 4) : '—') + '\n';
+    _mail += 'Transición Susi → Toyota: ' + _transTxt + '\n\n';
+    if (_r1.length) { _mail += 'RIESGO — Acantilado Susi (configura tras pasar a Toyota):\n'; _r1.forEach(t => _mail += '  - ' + t + '\n'); _mail += '\n'; }
+    if (_r3.length) { _mail += 'RIESGO — Dependencias fuera de orden:\n'; _r3.forEach(t => _mail += '  - ' + t + '\n'); _mail += '\n'; }
+    if (_r2.length) { _mail += 'RIESGO — Sobreasignación semanal:\n'; _r2.forEach(o => _mail += '  - ' + o.alias + ': ' + o.text + '\n'); _mail += '\n'; }
+    if (!_r1.length && !_r3.length && !_r2.length) _mail += 'Sin conflictos detectados en el plan actual.\n\n';
+    _mail += 'CUENTAS (orden cronológico):\n';
+    _repCuentas.forEach(c => { _mail += '  [' + c.statusLabel.toUpperCase() + '] ' + c.nombre + ' — desde ' + c.desde + ', entrega ~' + c.entrega + (c.flags ? ' (' + c.flags + ')' : '') + '\n'; });
+    _mail += '\nGenerado con el Simulador de Migración · Hidalgo & Asociados';
+    this._emailText = _mail;
+    const rep = {
+      hoy: _hoy, transTxt: _transTxt,
+      kpis: [
+        { label: 'Conflictos', value: String(rojos), color: rojos > 0 ? '#E85518' : '#22C55E' },
+        { label: 'Avisos', value: String(ambar), color: ambar > 0 ? '#F59E0B' : '#8C837B' },
+        { label: 'Cuentas en riesgo', value: _cuentasRiesgo + ' / ' + accounts.length, color: _cuentasRiesgo > 0 ? '#E85518' : '#00ACD4' },
+        { label: 'Entrega estimada', value: _maxFin ? this.fmtCorta(_maxFin) + ' ' + _maxFin.slice(0, 4) : '—', color: '#1E3A5F' },
+      ],
+      hasR1: _r1.length > 0, r1: _r1,
+      hasR3: _r3.length > 0, r3: _r3,
+      hasR2: _r2.length > 0, r2: _r2,
+      sinRiesgo: _r1.length === 0 && _r3.length === 0 && _r2.length === 0,
+      cuentas: _repCuentas,
+    };
+
+    // ── insights ──
+    const _r2cells = V.list.filter(v => v.rule === 'R2');
+    const _maxRed = Math.max(1, ...personas.map(per => _r2cells.filter(v => v.persona === per.id && v.sev === 'rojo').length));
+    const cargaEquipo = personas.map(per => {
+      const red = _r2cells.filter(v => v.persona === per.id && v.sev === 'rojo').length;
+      const nfases = asigs.filter(a => a.persona_id === per.id && !a.es_bloqueo).length;
+      return { alias: per.alias, red, nfases, w: Math.round(red / _maxRed * 100) };
+    }).filter(x => x.nfases > 0 || x.red > 0).sort((a, b) => b.red - a.red || b.nfases - a.nfases);
+    const _reglaR2 = _r2cells.length;
+    const _maxRegla = Math.max(1, _r1.length, _r3.length, _reglaR2);
+    const conflictosRegla = [
+      { label: 'Sobreasignación (R2)', value: _reglaR2, w: Math.round(_reglaR2/_maxRegla*100), color: '#E85518' },
+      { label: 'Dependencias (R3)', value: _r3.length, w: Math.round(_r3.length/_maxRegla*100), color: '#F59E0B' },
+      { label: 'Acantilado Susi (R1)', value: _r1.length, w: Math.round(_r1.length/_maxRegla*100), color: '#7B2FBE' },
+    ];
+    const _triMap = {};
+    accounts.forEach(a => { const ph = asigs.filter(x => x.proyecto_id === a.id && !x.es_bloqueo); let ent = null; ph.forEach(x => { if (!ent || x.fin > ent) ent = x.fin; }); if (!ent) return; const k = ent.slice(0,4) + ' · T' + (Math.floor((parseInt(ent.slice(5,7))-1)/3)+1); _triMap[k] = (_triMap[k]||0)+1; });
+    const _triKeys = Object.keys(_triMap).sort();
+    const _maxTri = Math.max(1, ..._triKeys.map(k => _triMap[k]));
+    const insights = {
+      kpis: [...rep.kpis, { label: 'Cuentas', value: String(accounts.length), color: P.celeste }, { label: 'Personas', value: String(personas.length), color: P.ink }],
+      cargaEquipo, conflictosRegla,
+      entregasTri: _triKeys.map(k => ({ label: k, value: _triMap[k], w: Math.round(_triMap[k]/_maxTri*100) })),
+      estVerde: accounts.filter(a => a.color === 'verde').length,
+      estAmbar: accounts.filter(a => a.color === 'ambar').length,
+      estRojo: accounts.filter(a => a.color === 'rojo').length,
+    };
+    // ── equipo + alta de cuenta ──
+    const tabStyle = (on) => ({ padding: '6px 14px', borderRadius: '9999px', border: 'none', background: on ? P.celeste : 'transparent', color: on ? '#fff' : P.t2, cursor: 'pointer', fontSize: '12.5px', fontWeight: 700, fontFamily: 'inherit' });
+    const segStyle = (on) => ({ flex: 1, padding: '7px 6px', border: '1px solid ' + (on ? P.celeste : P.line), background: on ? P.celesteDim : P.panel, color: on ? P.celeste : P.t2, borderRadius: '8px', cursor: 'pointer', fontSize: '11.5px', fontWeight: 700, fontFamily: 'inherit' });
+    const rolOptsForm = [ { id: 'relevamiento', label: 'Relev.' }, { id: 'configuracion', label: 'Config.' }, { id: 'pruebas', label: 'Pruebas' } ].map(o => ({ id: o.id, label: o.label, onClick: () => this.setState({ newRol: o.id }), style: segStyle((S.newRol || 'relevamiento') === o.id) }));
+    const teamList = personas.map(per => { const ri = ROL_INFO[per.rol] || ROL_INFO.relevamiento; const usado = asigs.filter(a => a.persona_id === per.id).length; return { id: per.id, alias: per.alias, rolLabel: ri.label, rolColor: ri.color, usado, onRemove: () => this.removePersona(per.id) }; });
+    const modalWrapStyle = { position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15,33,51,0.5)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)', padding: '20px' };
+    const modalCardStyle = { width: '430px', maxWidth: '100%', maxHeight: '85vh', overflow: 'auto', background: P.panel, borderRadius: '16px', padding: '22px', boxShadow: '0 24px 60px rgba(0,0,0,0.4)', border: '1px solid ' + P.line };
+    const modalInputStyle = { width: '100%', padding: '9px 11px', border: '1px solid ' + P.line, borderRadius: '9px', fontSize: '13.5px', fontWeight: 600, background: P.panelAlt, color: P.ink, fontFamily: 'inherit' };
+    const modalCloseStyle = { width: '30px', height: '30px', border: 'none', background: 'transparent', color: P.t3, cursor: 'pointer', fontSize: '22px', lineHeight: 1, borderRadius: '8px' };
+    const modalPrimaryStyle = { width: '100%', padding: '10px', border: 'none', borderRadius: '9999px', background: P.celeste, color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: 700, fontFamily: 'inherit', marginTop: '4px' };
+    const teamRemoveStyle = { width: '26px', height: '26px', border: '1px solid ' + P.line, background: 'transparent', color: P.t3, cursor: 'pointer', fontSize: '16px', lineHeight: 1, borderRadius: '7px', flexShrink: 0 };
+    const addCuentaBtnStyle = { padding: '5px 11px', border: '1px solid ' + P.celeste, borderRadius: '9999px', background: 'transparent', color: P.celeste, cursor: 'pointer', fontSize: '11px', fontWeight: 700, fontFamily: 'inherit', whiteSpace: 'nowrap' };
+
+    const presetStyle = { padding: '4px 10px', border: '1px solid '+P.line, borderRadius: '9999px', background: P.panel, cursor: 'pointer', fontSize: '11px', fontWeight: 700, color: P.t2, fontFamily: 'inherit' };
+    const toggleStyle = (on) => ({ padding: '6px 13px', border: '1px solid ' + (on ? P.celeste : P.line), borderRadius: '9999px', background: on ? P.celesteDim : P.panel, cursor: 'pointer', fontSize: '12px', fontWeight: 700, color: on ? P.celeste : P.t3, fontFamily: 'inherit', whiteSpace: 'nowrap' });
+
+    return {
+      appStyle: { display: 'flex', flexDirection: 'column', height: S.printMode ? 'auto' : '100vh', fontFamily: "'Plus Jakarta Sans', 'Source Sans Pro', system-ui, sans-serif", background: P.pageBg, color: P.ink, overflow: S.printMode ? 'visible' : 'hidden' },
+      P,
+      toggleTheme: () => this.toggleTheme(),
+      themeIcon: S.theme === 'dark' ? '☀' : '☾',
+      legend: [
+        { label: 'Relevamiento', dot: this.dotStr('#7B2FBE') },
+        { label: 'Configuración', dot: this.dotStr('#0E86C4') },
+        { label: 'Pruebas', dot: this.dotStr('#2FA35A') },
+        { label: 'Conflicto', dot: this.dotStr('#E85518') },
+      ],
+      // config bar
+      transValue: S.transicion || '',
+      onTransInput: (e) => this.setTrans(e.target.value),
+      clearTrans: () => this.setTrans(null),
+      transPresets: [
+        { label: 'Ago 26', onClick: () => this.setTrans('2026-08-03'), style: presetStyle },
+        { label: 'Oct 26', onClick: () => this.setTrans('2026-10-05'), style: presetStyle },
+      ],
+      rojos, ambar,
+      rojoPlural: rojos === 1 ? '' : 's', ambarPlural: ambar === 1 ? '' : 's',
+      sinConflictos: rojos === 0 && ambar === 0,
+      countRojoStyle: rojos > 0 ? { background: 'rgba(232,85,24,0.12)', color: '#C0420F', border: '1px solid rgba(232,85,24,0.32)', borderRadius: '9999px', padding: '4px 11px', fontSize: '11.5px', fontWeight: 800, whiteSpace: 'nowrap' } : { display: 'none' },
+      countAmbarStyle: ambar > 0 ? { background: 'rgba(245,158,11,0.14)', color: '#9A5A0B', border: '1px solid rgba(245,158,11,0.34)', borderRadius: '9999px', padding: '4px 11px', fontSize: '11.5px', fontWeight: 800, whiteSpace: 'nowrap' } : { display: 'none' },
+      countOkStyle: { background: 'rgba(34,197,94,0.12)', color: '#177A50', border: '1px solid rgba(34,197,94,0.32)', borderRadius: '9999px', padding: '4px 11px', fontSize: '11.5px', fontWeight: 800, whiteSpace: 'nowrap' },
+      toggleCarga: () => this.setState(s => ({ mostrarCarga: !s.mostrarCarga })),
+      toggleDep: () => this.setState(s => ({ mostrarDep: !s.mostrarDep })),
+      cargaBtnStyle: toggleStyle(S.mostrarCarga),
+      depBtnStyle: toggleStyle(S.mostrarDep),
+      onReset: () => this.reset(),
+      openReport: () => this.openReport(),
+      closeReport: () => this.closeReport(),
+      printReport: () => this.printReport(),
+      copyEmail: () => this.copyEmail(),
+      copyLabel: S.copied ? '✓ Copiado' : 'Copiar para mail',
+      showReport: S.report,
+      notPrinting: !S.printMode,
+      chromeStyle: S.printMode ? { display: 'none' } : { display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' },
+      resumenBtnStyle: { padding: '6px 15px', border: 'none', borderRadius: '9999px', background: P.celeste, color: '#fff', cursor: 'pointer', fontSize: '12px', fontWeight: 700, fontFamily: 'inherit', whiteSpace: 'nowrap' },
+      reportWrapStyle: S.printMode ? { background: '#fff' } : { position: 'fixed', inset: 0, zIndex: 999, overflow: 'auto', background: 'rgba(15,33,51,0.5)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)' },
+      reportSheetStyle: { maxWidth: '840px', margin: S.printMode ? '0 auto' : '26px auto 40px', background: '#fff', borderRadius: S.printMode ? '0' : '16px', padding: '32px 38px', fontFamily: "'Source Sans Pro', Arial, Helvetica, sans-serif", color: '#1E3A5F', boxShadow: S.printMode ? 'none' : '0 24px 60px rgba(15,33,51,0.35)' },
+      rep,
+      // navegación
+      isTimeline: (S.vista || 'timeline') === 'timeline',
+      isInsights: S.vista === 'insights',
+      setTimeline: () => this.setState({ vista: 'timeline' }),
+      setInsights: () => this.setState({ vista: 'insights' }),
+      tabTimelineStyle: tabStyle((S.vista || 'timeline') === 'timeline'),
+      tabInsightsStyle: tabStyle(S.vista === 'insights'),
+      logoSrc: 'assets/logo-ha.png',
+      insights,
+      // equipo + cuentas
+      stop: (e) => e.stopPropagation(),
+      openTeam: () => this.setState({ showTeam: true }),
+      closeTeam: () => this.setState({ showTeam: false }),
+      showTeam: !!S.showTeam,
+      teamList, rolOptsForm,
+      newAlias: S.newAlias || '',
+      onNewAlias: (e) => this.setState({ newAlias: e.target.value }),
+      addPersona: () => this.addPersona(),
+      openCuenta: () => this.setState({ showCuenta: true, newCuentaInicio: this.state.newCuentaInicio || this.defaultInicio() }),
+      closeCuenta: () => this.setState({ showCuenta: false }),
+      showCuenta: !!S.showCuenta,
+      newCuentaNombre: S.newCuentaNombre || '',
+      onCuentaNombre: (e) => this.setState({ newCuentaNombre: e.target.value }),
+      newCuentaInicio: S.newCuentaInicio || '',
+      onCuentaInicio: (e) => this.setState({ newCuentaInicio: e.target.value }),
+      addCuenta: () => this.addCuenta(),
+      modalWrapStyle, modalCardStyle, modalInputStyle, modalCloseStyle, modalPrimaryStyle, teamRemoveStyle, addCuentaBtnStyle,
+      // rail
+      accountsCount: S.proyectos.length,
+      accounts,
+      // timeline
+      scRef: this.scRef, rowsRef: this.rowsRef,
+      totalW, rowsHeight,
+      contentStyle: { width: totalW+'px', position: 'relative', minHeight: '100%' },
+      headerRowStyle: { display: 'flex', position: 'sticky', top: 0, zIndex: 12, height: '38px', width: totalW+'px', background: P.panel, borderBottom: '2px solid '+P.line },
+      cornerStyle: { position: 'sticky', left: 0, zIndex: 13, width: NAME_W+'px', flexShrink: 0, height: '100%', display: 'flex', alignItems: 'center', paddingLeft: '14px', fontSize: '11px', fontWeight: 800, color: P.t2, background: P.panelAlt, borderRight: '1px solid '+P.line, textTransform: 'uppercase', letterSpacing: '0.06em' },
+      weeks,
+      svgStyle: { position: 'absolute', top: 0, left: 0, zIndex: 3, pointerEvents: 'none', overflow: 'visible' },
+      depPaths, arrowFill: depPaths.some(d => d.stroke === '#E85518') ? '#E85518' : P.celeste,
+      transLine, transLineStyle, transLabelStyle,
+      rows,
+      // detail
+      hasSelection: sel ? true : false,
+      noSelection: sel ? false : true,
+      sel: selObj,
+      stepBtnStyle: { padding: '5px 10px', border: '1px solid '+P.celeste, borderRadius: '9999px', background: 'transparent', color: P.celeste, cursor: 'pointer', fontSize: '11px', fontWeight: 700, fontFamily: 'inherit' },
+      fieldLabelStyle: { display: 'block', fontSize: '10px', fontWeight: 700, color: P.t3, marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.05em' },
+      selectStyle: { width: '100%', padding: '7px 9px', border: '1px solid '+P.line, borderRadius: '8px', fontSize: '13px', fontWeight: 600, background: P.panelAlt, color: P.ink, cursor: 'pointer', fontFamily: 'inherit' },
+      roundBtnStyle: { width: '28px', height: '28px', border: '1px solid '+P.line, borderRadius: '9999px', background: P.panelAlt, cursor: 'pointer', fontSize: '16px', lineHeight: 1, color: P.ink, fontWeight: 700, fontFamily: 'inherit' },
+      dateInputStyle: { padding: '7px 9px', border: '1px solid '+P.line, borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, background: P.panelAlt, color: P.ink, fontFamily: 'inherit' },
+      finBoxStyle: { padding: '7px 11px', background: P.panelAlt, borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, color: P.t2, border: '1px solid '+P.lineSoft },
+    };
+  }
+
+  dotStr(c) { return 'width:9px;height:9px;border-radius:3px;background:' + c + ';display:inline-block'; }
+}
+</script>
+</body>
+</html>
