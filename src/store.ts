@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { addDays, addWeeks, parseISO } from 'date-fns'
+import { addDays, addWeeks, differenceInDays, parseISO } from 'date-fns'
 import type { Asignacion, Config, Persona, Proyecto, RolPersona, TipoFase, Violacion } from './types'
 import { calcularFin, getMondayOfWeek, toISO } from './utils/dates'
 import { computeViolaciones as _computeViolaciones } from './rules'
@@ -80,6 +80,7 @@ interface SimuladorState {
   removeProyecto: (id: string) => void
   renameProyecto: (id: string, nombre: string) => void
   clearAsignaciones: () => void
+  shiftAccountDias: (proyectoId: string, dias: number) => void
   resetToSeed: () => void
   exportarJSON: () => string
   importarJSON: (json: string) => void
@@ -127,9 +128,44 @@ export const useSimuladorStore = create<SimuladorState>()(
             ...state.config,
             fechas_clave: { ...state.config.fechas_clave, [key]: value },
           }
+
+          let asignaciones = state.asignaciones
+
+          // Al definir "Inicio Toyota" y TASA sin fases: auto-crear Relev(lau 4m) → Config(susi 4m) → Pruebas(lau 2m)
+          if (key === 'transicion_susana_toyota' && value) {
+            const tasaFases = state.asignaciones.filter(a => a.proyecto_id === 'tasa' && !a.es_bloqueo)
+            if (tasaFases.length === 0) {
+              const relevInicio = toISO(getMondayOfWeek(parseISO(value)))
+              const relevFin    = calcularFin(relevInicio, 88)
+              const configInicio = siguienteLunes(relevFin)
+              const configFin   = calcularFin(configInicio, 88)
+              const pruebasInicio = siguienteLunes(configFin)
+              const pruebasFin  = calcularFin(pruebasInicio, 44)
+
+              const mk = (
+                sufijo: string, tipo: TipoFase, ini: string, fin: string, dur: number, preds: string[],
+              ): Asignacion => ({
+                id: `tasa-${sufijo}`,
+                proyecto_id: 'tasa',
+                tipo,
+                persona_id: sufijo === 'config' ? 'susi' : 'lau',
+                inicio: ini, fin, duracion_dias: dur,
+                dedicacion_pct: 1, predecesoras: preds, es_bloqueo: false,
+              })
+
+              const nuevas: Asignacion[] = [
+                mk('relev',   'Relevamiento',  relevInicio,   relevFin,   88, []),
+                mk('config',  'Configuracion', configInicio,  configFin,  88, ['tasa-relev']),
+                mk('pruebas', 'Pruebas',       pruebasInicio, pruebasFin, 44, ['tasa-config']),
+              ]
+              asignaciones = [...state.asignaciones, ...nuevas]
+            }
+          }
+
           return {
             config,
-            violaciones: recompute(state.asignaciones, state.proyectos, state.personas, config),
+            asignaciones,
+            violaciones: recompute(asignaciones, state.proyectos, state.personas, config),
           }
         })
       },
@@ -294,6 +330,28 @@ export const useSimuladorStore = create<SimuladorState>()(
         set(state => ({
           proyectos: state.proyectos.map(p => (p.id === id ? { ...p, nombre: nombreLimpio } : p)),
         }))
+      },
+
+      // Mueve una cuenta N días calendario (permite sub-semana en zoom días).
+      shiftAccountDias(proyectoId, dias) {
+        set(state => {
+          const projAsigs = state.asignaciones.filter(a => a.proyecto_id === proyectoId)
+          if (projAsigs.length === 0 || dias === 0) return {}
+          const horizonStart = parseISO(state.config.horizonte.desde)
+          const earliest = projAsigs.reduce((m, a) => a.inicio < m ? a.inicio : m, projAsigs[0].inicio)
+          const daysFromHorizon = differenceInDays(parseISO(earliest), horizonStart)
+          const clamped = Math.max(dias, -daysFromHorizon)
+          if (clamped === 0) return {}
+          const asignaciones = state.asignaciones.map(a => {
+            if (a.proyecto_id !== proyectoId) return a
+            const inicio = toISO(addDays(parseISO(a.inicio), clamped))
+            return { ...a, inicio, fin: calcularFin(inicio, a.duracion_dias) }
+          })
+          return {
+            asignaciones,
+            violaciones: recompute(asignaciones, state.proyectos, state.personas, state.config),
+          }
+        })
       },
 
       // Vacía todas las asignaciones (las cuentas y el equipo quedan; pasan a "sin planificar").

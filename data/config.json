@@ -8,12 +8,12 @@
   "fechas_clave": {
     "transicion_susana_toyota": null,
     "retro_ready_axton": null,
-    "_nota": "transicion_susana_toyota: PERILLA principal, sin definir. La mueve el simulador (Regla 1). retro_ready_axton: fecha en que el retro de Axton queda listo; habilita config de cuentas retro-dependientes (Regla 5, roadmap)."
+    "_nota": "transicion_susana_toyota: PERILLA principal (Inicio Toyota). Al definirla se auto-crean las 3 fases de TASA (Relev Lau 4m, Config Susi 4m, Pruebas Lau 2m). retro_ready_axton: roadmap."
   },
   "pisos_soporte_horas_semana": {
     "moni": null,
     "leo": null,
-    "_nota": "Horas semanales reservadas para soporte que la migracion NO puede consumir. Definir con datos de SLA. Regla de piso = roadmap (no MVP)."
+    "_nota": "Horas semanales reservadas para soporte. Regla de piso = roadmap (no MVP)."
   },
   "feriados_nacionales_2026": [
     { "fecha": "2026-01-01", "nombre": "Año Nuevo" },
@@ -33,10 +33,10 @@
     { "fecha": "2026-12-08", "nombre": "Inmaculada Concepcion de Maria" },
     { "fecha": "2026-12-25", "nombre": "Navidad" }
   ],
-  "_feriados_nota": "Feriados nacionales 2026. En el MVP los feriados pueden ignorarse; en v2 reducen la capacidad de la semana que los contiene.",
+  "_feriados_nota": "Feriados nacionales 2026.",
   "horizonte": {
-    "desde": "2026-01-01",
-    "hasta": "2027-05-31",
-    "_nota": "Cubre todo el board: desde TIM (ene 2026) hasta Ford-Pruebas (may 2027)."
+    "desde": "2026-06-01",
+    "hasta": "2028-06-30",
+    "_nota": "Horizonte completo: jun 2026 – jun 2028 (dos años de planificación)."
   }
 }
