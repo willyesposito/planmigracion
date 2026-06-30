@@ -25,7 +25,8 @@ html, body, #root {
   --t3:    #8FA3BA;
 
   /* Superficies */
-  --paper:     #FCFCFB;
+  --lienzo:    #EEF2F7;  /* fondo de página (lienzo); los paneles van sobre --white */
+  --paper:     #FCFCFB;  /* superficie sutil: filas alternas del timeline, headers, campos read-only */
   --white:     #FFFFFF;
   --line:      #E7E6E6;
   --line-soft: #EFEEEC;
@@ -34,6 +35,13 @@ html, body, #root {
   --ok:      #22C55E;  --ok-bg:      rgba(34,197,94,0.10);   --ok-bd:      rgba(34,197,94,0.30);   --ok-tx:      #177A50;
   --warn:    #F59E0B;  --warn-bg:    rgba(245,158,11,0.12);  --warn-bd:    rgba(245,158,11,0.32);  --warn-tx:    #9A5A0B;
   --error:   #E85518;  --error-bg:   rgba(232,85,24,0.10);   --error-bd:   rgba(232,85,24,0.30);   --error-tx:   #C0420F;
+
+  /* Colores de fase (H&A Design System; reemplazan los vendor colors hardcodeados) */
+  --fase-relev:   #7B2FBE;       /* = --hya-seleccion del DS (antes #7c5cbf sin respaldo) */
+  --fase-config:  #00ACD4;       /* celeste de marca (antes #579bfc, azul de Monday) */
+  --fase-pruebas: #2FA35A;       /* verde propio de fase, distinto de --ok #22C55E (estado) */
+  --fase-bloqueo: var(--gris);   /* #8C837B, unifica los #bbb/#999 inconsistentes */
+  --tasa:         #7B2FBE;       /* badge de cuenta especial (Toyota/TASA); token propio */
 
   /* Sombras */
   --sh-sm:      0 1px 4px rgba(30,58,95,0.06);
@@ -46,12 +54,14 @@ html, body, #root {
   --r-full: 9999px;
 
   /* Animación */
-  --ease: cubic-bezier(.4, 0, .2, 1);
-  --t:    0.22s;
+  --ease:   cubic-bezier(.4, 0, .2, 1);
+  --t:      0.22s;
+  --t-fast: 0.18s;   /* reubicación de barras al soltar el drag en el timeline */
 
   /* Fuentes */
-  --font:  'Plus Jakarta Sans', 'Source Sans Pro', system-ui, Arial, sans-serif;
-  --serif: 'DM Serif Display', Georgia, serif;
+  --font:   'Plus Jakarta Sans', 'Source Sans Pro', system-ui, Arial, sans-serif;
+  --serif:  'DM Serif Display', Georgia, serif;
+  --font-report: 'Source Sans Pro', Arial, sans-serif;   /* materiales formales: Resumen ejecutivo */
 
   /* Layout */
   --hdr-h: 56px;
@@ -59,11 +69,11 @@ html, body, #root {
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --celeste:        #1FBEE0;
+  --celeste:        #27C3E6;   /* celeste oscuro del H&A DS (antes #1FBEE0) */
   --celeste-dark:   #16A6C6;
   --celeste-deeper: #5AD2EE;
-  --celeste-dim:    rgba(31, 190, 224, 0.14);
-  --celeste-border: rgba(31, 190, 224, 0.34);
+  --celeste-dim:    rgba(39, 195, 230, 0.14);
+  --celeste-border: rgba(39, 195, 230, 0.34);
   --gris:           #9FB1C2;
 
   --ink:   #EAF1F8;
@@ -71,6 +81,7 @@ html, body, #root {
   --t2:    #92A6BC;
   --t3:    #5F758D;
 
+  --lienzo:    #0A131E;
   --paper:     #0B1521;
   --white:     #111E2C;
   --line:      #23364A;
@@ -89,7 +100,7 @@ body {
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background: var(--paper);
+  background: var(--lienzo);
   color: var(--t1);
   transition: background var(--t) var(--ease), color var(--t) var(--ease);
 }

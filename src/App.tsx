@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ClientPanel } from './components/ClientPanel'
 import { Timeline } from './components/Timeline'
 import { ConfigPanel } from './components/ConfigPanel'
+import logoUrl from './assets/logo-ha.png'
 
 type Vista = 'clientes' | 'timeline'
 
@@ -34,14 +35,13 @@ export default function App() {
       }}>
         {/* Isotipo + wordmark */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: '50%',
-            background: 'var(--celeste)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.5px', flexShrink: 0,
-          }}>
-            H&amp;A
-          </div>
+          <img
+            src={logoUrl}
+            alt="Hidalgo & Asociados"
+            width={38}
+            height={38}
+            style={{ borderRadius: '50%', flexShrink: 0, display: 'block' }}
+          />
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
             <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
               Hidalgo <span style={{ color: 'var(--gris)', fontWeight: 400, fontStyle: 'italic' }}>&amp;</span> Asociados
@@ -108,7 +108,7 @@ export default function App() {
       <ConfigPanel />
 
       {/* Contenido principal */}
-      <div style={{ flex: 1, overflow: 'hidden', background: 'var(--paper)' }}>
+      <div style={{ flex: 1, overflow: 'hidden', background: 'var(--lienzo)' }}>
         {vista === 'clientes' ? <ClientPanel /> : <Timeline />}
       </div>
     </div>

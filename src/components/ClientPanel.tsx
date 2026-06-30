@@ -1,23 +1,8 @@
 import type { CSSProperties } from 'react'
 import { useSimuladorStore } from '../store'
 import type { Asignacion, Persona, TipoFase, Violacion } from '../types'
+import { TIPO_COLOR, TIPO_LABEL, ORDEN_FASES } from '../theme/fases'
 import { formatFechaCorta } from '../utils/dates'
-
-const TIPO_COLOR: Record<TipoFase, string> = {
-  Relevamiento: '#7c5cbf',
-  Configuracion: '#579bfc',
-  Pruebas: '#5cb85c',
-  Vacaciones: '#999',
-}
-
-const TIPO_LABEL: Record<TipoFase, string> = {
-  Relevamiento: 'Relevamiento',
-  Configuracion: 'Configuración',
-  Pruebas: 'Pruebas',
-  Vacaciones: 'Vacaciones',
-}
-
-const ORDEN_FASES: TipoFase[] = ['Relevamiento', 'Configuracion', 'Pruebas']
 
 export function ClientPanel() {
   const { proyectos, asignaciones, personas, violaciones, clienteSeleccionado, seleccionarCliente, updateAsignacion } =
@@ -115,7 +100,7 @@ export function ClientPanel() {
               </span>
               <span style={{ display: 'flex', gap: 3 }}>
                 {proyecto.especial && (
-                  <span style={{ fontSize: 10, background: '#7c5cbf', color: '#fff', borderRadius: 4, padding: '1px 5px' }}>
+                  <span style={{ fontSize: 10, background: 'var(--tasa)', color: '#fff', borderRadius: 4, padding: '1px 5px' }}>
                     TASA
                   </span>
                 )}
@@ -146,7 +131,7 @@ export function ClientPanel() {
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
               <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{seleccionado.proyecto.nombre}</h2>
               {seleccionado.proyecto.especial && (
-                <span style={{ background: '#7c5cbf', color: '#fff', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>
+                <span style={{ background: 'var(--tasa)', color: '#fff', borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>
                   Especial (Toyota)
                 </span>
               )}
