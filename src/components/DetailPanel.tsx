@@ -5,7 +5,7 @@ import { TIPO_COLOR, TIPO_LABEL, ORDEN_FASES } from '../theme/fases'
 import { formatFechaCorta } from '../utils/dates'
 
 export function DetailPanel() {
-  const { proyectos, asignaciones, personas, violaciones, clienteSeleccionado, updateAsignacion, shiftAccount, renameProyecto, removeProyecto } =
+  const { proyectos, asignaciones, personas, violaciones, clienteSeleccionado, updateAsignacion, addFase, shiftAccount, renameProyecto, removeProyecto } =
     useSimuladorStore()
 
   const proyecto = proyectos.find(p => p.id === clienteSeleccionado) ?? null
@@ -49,7 +49,7 @@ export function DetailPanel() {
         <div style={{ color: 'var(--t3)', textAlign: 'center', marginTop: 60, fontSize: 14, lineHeight: 1.6, padding: '0 12px' }}>
           Seleccioná una cuenta del panel izquierdo para ver y editar sus fases.
           <div style={{ marginTop: 16, fontSize: 12, color: 'var(--t3)' }}>
-            En el timeline: arrastrá una barra para moverla · vertical reasigna persona · borde derecho estira · Shift mueve la cuenta entera.
+            En el timeline: arrastrá una barra para moverla · vertical reasigna persona · borde derecho estira. Con el toggle "Al mover" elegís si arrastrar mueve solo la tarea (Flexible) o las 3 fases del proyecto juntas (Estricto); Shift invierte el modo puntualmente.
           </div>
         </div>
       ) : (
@@ -98,6 +98,7 @@ export function DetailPanel() {
                 personas={personas}
                 violaciones={asignacion ? (violsPorAsig.get(asignacion.id) ?? []) : []}
                 onUpdate={patch => asignacion && updateAsignacion(asignacion.id, patch)}
+                onCreate={personaId => proyecto && addFase(proyecto.id, tipo, personaId)}
               />
             ))}
           </div>
@@ -113,9 +114,10 @@ interface FaseCardProps {
   personas: Persona[]
   violaciones: Violacion[]
   onUpdate: (patch: Partial<Asignacion>) => void
+  onCreate: (personaId: string) => void
 }
 
-function FaseCard({ tipo, asignacion, personas, violaciones, onUpdate }: FaseCardProps) {
+function FaseCard({ tipo, asignacion, personas, violaciones, onUpdate, onCreate }: FaseCardProps) {
   const color = TIPO_COLOR[tipo]
   const hasRojo = violaciones.some(v => v.severidad === 'rojo')
   const hasAmbar = violaciones.some(v => v.severidad === 'ambar')
@@ -170,7 +172,21 @@ function FaseCard({ tipo, asignacion, personas, violaciones, onUpdate }: FaseCar
           )}
         </div>
       ) : (
-        <div style={{ padding: 14, color: 'var(--t3)', fontSize: 12.5, fontStyle: 'italic' }}>Sin planificar</div>
+        <div style={{ padding: 14 }}>
+          <Campo label="¿Quién la hace?">
+            <select
+              value=""
+              onChange={e => { if (e.target.value) onCreate(e.target.value) }}
+              style={input}
+            >
+              <option value="" disabled>Elegí una persona…</option>
+              {personas.map(p => <option key={p.id} value={p.id}>{p.alias}</option>)}
+            </select>
+          </Campo>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--t3)', lineHeight: 1.4 }}>
+            Al elegir, se planifica esta fase y podés ajustar fechas y duración.
+          </div>
+        </div>
       )}
     </div>
   )

@@ -7,8 +7,7 @@
   },
   "proyectos": [
     { "id": "tim",       "nombre": "TIM",           "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Primera cuenta en el board (ene 2026). Relevamiento Leo." },
-    { "id": "allegro",   "nombre": "Allegro",        "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Inicia feb 2026. Relevamiento Lau." },
-    { "id": "piano",     "nombre": "Piano",          "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Leo, configuracion Moni." },
+{ "id": "piano",     "nombre": "Piano",          "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Relevamiento Leo, configuracion Moni." },
     { "id": "marval",    "nombre": "Marval",         "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Config larga (30 dias). Relevamiento Susi (unico caso de Susi en relevamiento estandar)." },
     { "id": "finadiet",  "nombre": "Finadiet",       "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Configuracion Susi." },
     { "id": "dla",       "nombre": "DLA",            "complejidad": null, "depende_retro": null, "entidades": 1, "quick_win": false, "especial": false, "_nota": "Etiquetada 'DLA (Mixplay)' en el board." },

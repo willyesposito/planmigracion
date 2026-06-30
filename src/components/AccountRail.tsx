@@ -5,7 +5,7 @@ import { formatFechaCorta } from '../utils/dates'
 
 export function AccountRail() {
   const { proyectos, asignaciones, violaciones, clienteSeleccionado, seleccionarCliente, removeProyecto } = useSimuladorStore()
-  const abrirModal = useUIStore(s => s.abrirModal)
+  const { abrirModal, sortCuentas, toggleSortCuentas } = useUIStore()
 
   function handleRemove(id: string, nombre: string) {
     const fases = asignaciones.filter(a => a.proyecto_id === id).length
@@ -36,18 +36,28 @@ export function AccountRail() {
         return { proyecto: p, primeraFase }
       })
       .sort((a, b) => {
+        if (sortCuentas === 'nombre') {
+          return a.proyecto.nombre.localeCompare(b.proyecto.nombre, 'es')
+        }
+        // 'fecha'
         if (!a.primeraFase && !b.primeraFase) return 0
         if (!a.primeraFase) return 1
         if (!b.primeraFase) return -1
         return a.primeraFase < b.primeraFase ? -1 : 1
       })
-  }, [proyectos, asignaciones])
+  }, [proyectos, asignaciones, sortCuentas])
 
   return (
     <div style={{ width: 218, flexShrink: 0, borderRight: '1px solid var(--line)', background: 'var(--paper)', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Cabecera con acciones */}
       <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--line)', background: 'var(--white)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--t2)' }}>{cuentas.length} cuentas</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--t2)' }}>{cuentas.length} cuentas</span>
+          <button onClick={toggleSortCuentas} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: 'var(--t3)', padding: '0 2px' }}
+            title={sortCuentas === 'fecha' ? 'Ordenado por fecha de inicio (clic para A-Z)' : 'Ordenado A-Z (clic para fecha)'}>
+            {sortCuentas === 'fecha' ? '📅 Fecha' : 'A-Z'}
+          </button>
+        </div>
         <div style={{ display: 'flex', gap: 6 }}>
           <button onClick={() => abrirModal('equipo')} style={railBtn} title="Gestionar equipo">👥 Equipo</button>
           <button onClick={() => abrirModal('cuenta')} style={{ ...railBtn, background: 'var(--celeste)', color: '#fff', border: 'none' }} title="Agregar cuenta">+ Cuenta</button>

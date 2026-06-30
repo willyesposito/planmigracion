@@ -1,6 +1,13 @@
 import type { CSSProperties } from 'react'
 import { useSimuladorStore } from '../store'
-import { useUIStore } from '../uiStore'
+import { useUIStore, type ZoomLevel } from '../uiStore'
+
+const ZOOM_OPTS: { value: ZoomLevel; label: string }[] = [
+  { value: 'dias',       label: 'Días' },
+  { value: 'semanas',    label: 'Semanas' },
+  { value: 'meses',      label: 'Meses' },
+  { value: 'trimestres', label: 'Trimestres' },
+]
 
 const PRESETS: { label: string; fecha: string }[] = [
   { label: 'Ago 26', fecha: '2026-08-03' },
@@ -9,7 +16,7 @@ const PRESETS: { label: string; fecha: string }[] = [
 
 export function ConfigPanel() {
   const { config, updateConfigFecha, violaciones, resetToSeed, exportarJSON, importarJSON, clearAsignaciones, asignaciones } = useSimuladorStore()
-  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen, timelineFull, toggleTimelineFull } = useUIStore()
+  const { mostrarCarga, mostrarDep, toggleCarga, toggleDep, setResumen, timelineFull, toggleTimelineFull, zoom, setZoom, irHoy, modoMovimiento, setModoMovimiento } = useUIStore()
 
   const transicion = config.fechas_clave.transicion_susana_toyota
   const rojos = violaciones.filter(v => v.severidad === 'rojo').length
@@ -42,7 +49,7 @@ export function ConfigPanel() {
     <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--line)', padding: '9px 18px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
       {/* Perilla + presets */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)', whiteSpace: 'nowrap' }}>Transición Susi → Toyota</label>
+        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)', whiteSpace: 'nowrap' }}>Inicio Toyota</label>
         <input type="date" value={transicion ?? ''} onChange={e => updateConfigFecha('transicion_susana_toyota', e.target.value || null)}
           style={{ padding: '5px 8px', border: '1.5px solid var(--line)', borderRadius: 8, fontSize: 13, fontWeight: 500, background: 'var(--white)', color: 'var(--ink)' }} />
         {PRESETS.map(p => (
@@ -52,6 +59,34 @@ export function ConfigPanel() {
         {transicion && (
           <button onClick={() => updateConfigFecha('transicion_susana_toyota', null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--t3)', fontSize: 16, padding: 0 }} title="Limpiar fecha">×</button>
         )}
+      </div>
+
+      {/* Nivel de zoom */}
+      <div style={{ display: 'flex', border: '1.5px solid var(--line)', borderRadius: 9999, overflow: 'hidden' }}>
+        {ZOOM_OPTS.map(z => (
+          <button key={z.value} onClick={() => setZoom(z.value)}
+            style={{ padding: '4px 11px', border: 'none', background: zoom === z.value ? 'var(--celeste)' : 'var(--white)', color: zoom === z.value ? '#fff' : 'var(--t2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            {z.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Ir al día de hoy */}
+      <button onClick={irHoy} style={{ ...pillBtn, display: 'flex', alignItems: 'center', gap: 5, borderColor: 'var(--celeste-border)', color: 'var(--celeste-dark)' }} title="Centrar el timeline en el día de hoy">
+        📍 Hoy
+      </button>
+
+      {/* Modo de movimiento al arrastrar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--t2)', whiteSpace: 'nowrap' }}>Al mover</span>
+        <div style={{ display: 'flex', border: '1.5px solid var(--line)', borderRadius: 9999, overflow: 'hidden' }}>
+          <button onClick={() => setModoMovimiento('flexible')}
+            style={{ padding: '4px 11px', border: 'none', background: modoMovimiento === 'flexible' ? 'var(--celeste)' : 'var(--white)', color: modoMovimiento === 'flexible' ? '#fff' : 'var(--t2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            title="Arrastrar mueve solo la tarea (Shift = proyecto entero)">⚡ Flexible</button>
+          <button onClick={() => setModoMovimiento('estricto')}
+            style={{ padding: '4px 11px', border: 'none', background: modoMovimiento === 'estricto' ? 'var(--celeste)' : 'var(--white)', color: modoMovimiento === 'estricto' ? '#fff' : 'var(--t2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            title="Arrastrar mueve las 3 fases del proyecto juntas (Shift = solo esta tarea)">🔗 Estricto</button>
+        </div>
       </div>
 
       {/* Toggles de visualización */}
@@ -87,12 +122,12 @@ export function ConfigPanel() {
 }
 
 const pillBtn: CSSProperties = {
-  padding: '4px 11px', border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',
+  padding: '4px 11px', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'var(--line)', borderRadius: 9999, background: 'var(--white)',
   cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--t2)',
 }
 const activePill: CSSProperties = { background: 'var(--celeste)', color: '#fff', borderColor: 'var(--celeste)' }
 const actionBtn: CSSProperties = {
-  padding: '5px 14px', border: '1.5px solid var(--line)', borderRadius: 9999, background: 'var(--white)',
+  padding: '5px 14px', borderWidth: 1.5, borderStyle: 'solid', borderColor: 'var(--line)', borderRadius: 9999, background: 'var(--white)',
   cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--t1)',
 }
 function chip(bg: string, tx: string, bd: string): CSSProperties {

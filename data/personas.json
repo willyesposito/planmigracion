@@ -23,7 +23,7 @@
       "skills": ["relevamiento", "soporte", "meta4"],
       "capacidad_horas_semana": 40,
       "buffer_pct": 0,
-      "_nota": "Full-time. Soporte Meta4 + relevamiento en dupla con Sergio. Disponibilidad parcial para relevamiento segun el plan: ajustar buffer_pct o dedicacion de sus fases si su soporte Meta4 le come horas."
+      "_nota": "Full-time. Soporte Meta4 + relevamiento. Disponibilidad parcial para relevamiento segun el plan: ajustar buffer_pct o dedicacion de sus fases si su soporte Meta4 le come horas."
     },
     {
       "id": "lau",
@@ -34,76 +34,12 @@
       "_nota": "Full-time, dedicada 100% a Toyota/TASA."
     },
     {
-      "id": "sergio",
-      "alias": "Sergio",
-      "skills": ["relevamiento", "meta4", "pruebas"],
+      "id": "gaby_f",
+      "alias": "Gaby F.",
+      "skills": [],
       "capacidad_horas_semana": 40,
       "buffer_pct": 0,
-      "_nota": "Relevador senior. Trabaja asincronico. Hace pruebas en cuentas finales (Bonafide, Campari, Coty, GSMA)."
-    },
-    {
-      "id": "lucas",
-      "alias": "Lucas",
-      "skills": ["reporteria", "infra"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Infra de datos + Crystal/reporteria. No configura. Relevante para reportes post-migracion y piso de soporte."
-    },
-    {
-      "id": "florencia",
-      "alias": "Florencia",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en TIM y Allegro. Confirmar disponibilidad real."
-    },
-    {
-      "id": "melina",
-      "alias": "Melina",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en Piano. Confirmar disponibilidad real."
-    },
-    {
-      "id": "araceli",
-      "alias": "Araceli",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en Marval. Confirmar disponibilidad real."
-    },
-    {
-      "id": "candela",
-      "alias": "Candela",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en Finadiet, POF y Copetro. Confirmar disponibilidad real."
-    },
-    {
-      "id": "agustina_c",
-      "alias": "Agustina C.",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en DLA, Carrier y Aysa. Confirmar disponibilidad real."
-    },
-    {
-      "id": "veronica",
-      "alias": "Verónica",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en Lowsedo. Confirmar disponibilidad real."
-    },
-    {
-      "id": "consultor_payroll",
-      "alias": "Consultor Payroll",
-      "skills": ["pruebas"],
-      "capacidad_horas_semana": 40,
-      "buffer_pct": 0,
-      "_nota": "Hace pruebas en Sportline y Ford. Recurso externo, confirmar disponibilidad."
+      "_nota": "Recurso del equipo. Confirmar skills, rol y capacidad real (se cargo solo con alias por la regla de privacidad)."
     }
   ]
 }
